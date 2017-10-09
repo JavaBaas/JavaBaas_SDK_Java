@@ -1,0 +1,306 @@
+package com.javabaas.javasdk;
+
+import java.util.*;
+
+/**
+ * Created by zangyilin on 2017/9/4.
+ */
+public class JBQueryConditions {
+
+    public static final String WHERE = "where";
+    public static final String LIMIT = "limit";
+    public static final String SKIP = "skip";
+    public static final String ORDER = "order";
+    public static final String INCLUDE = "include";
+    public static final String KEYS = "keys";
+
+    Map<String, List<JBQueryOperation>> where;
+    private List<String> include;
+    private Set<String> selectedKeys;
+    private int limit;
+    private int skip = -1;
+    private String order;
+    private Map<String, String> parameters;
+
+    public JBQueryConditions() {
+        where = new HashMap<>();
+        include = new LinkedList<>();
+        parameters = new HashMap<>();
+    }
+
+    public int getLimit() {
+        return limit;
+    }
+
+    public void setLimit(int limit) {
+        this.limit = limit;
+    }
+
+    public int getSkip() {
+        return skip;
+    }
+
+    public void setSkip(int skip) {
+        this.skip = skip;
+    }
+
+    public String getOrder() {
+        return order;
+    }
+
+    public void setOrder(String order) {
+        this.order = order;
+    }
+
+    public Map<String, List<JBQueryOperation>> getWhere() {
+        return where;
+    }
+
+    public void setWhere(Map<String, List<JBQueryOperation>> where) {
+        this.where = where;
+    }
+
+    public List<String> getInclude() {
+        return include;
+    }
+
+    public void setInclude(List<String> include) {
+        this.include = include;
+    }
+
+    public Set<String> getSelectedKeys() {
+        return selectedKeys;
+    }
+
+    public void setSelectedKeys(Set<String> selectedKeys) {
+        this.selectedKeys = selectedKeys;
+    }
+
+    public Map<String, String> getParameters() {
+        return parameters;
+    }
+
+    public void setParameters(Map<String, String> parameters) {
+        this.parameters = parameters;
+    }
+
+    public void addAscendingOrder(String key) {
+        if (JBUtils.isEmpty(order)) {
+            this.orderByAscending(key);
+        } else {
+            order = String.format("%s,%s", order, key);
+        }
+    }
+
+    public void orderByAscending(String key) {
+        order = String.format("%s", key);
+    }
+
+    public void addDescendingOrder(String key) {
+        if (JBUtils.isEmpty(key)) {
+            this.orderByDescending(key);
+        } else {
+            order = String.format("%s, -%s", order, key);
+        }
+    }
+
+    public void orderByDescending(String key) {
+        order = String.format("-%s", key);
+    }
+
+    public void include(String key) {
+        include.add(key);
+    }
+
+    public void selectKeys(Collection<String> keys) {
+        if (selectedKeys == null) {
+            selectedKeys = new HashSet<>();
+        }
+        selectedKeys.addAll(keys);
+    }
+
+    public Map<String, Object> compileWhereOperationMap() {
+        Map<String, Object> result = new HashMap<>();
+        where.forEach((key, ops) -> {
+            if (key.equals(JBQueryOperation.OR_OP)) {
+                List<Object> opList = new ArrayList<>();
+                ops.forEach(op -> opList.add(op.toResult()));
+                List<Object> existsOr = (List<Object>) result.get(JBQueryOperation.OR_OP);
+                if (existsOr != null) {
+                    existsOr.addAll(opList);
+                } else {
+                    result.put(JBQueryOperation.OR_OP, opList);
+                }
+            } else if (key.equals(JBQueryOperation.AND_OP)) {
+                List<Object> opList = new ArrayList<>();
+                ops.forEach(op -> opList.add(op.getValue()));
+                List<Object> existsAnd = (List<Object>) result.get(JBQueryOperation.AND_OP);
+                if (existsAnd != null) {
+                    existsAnd.addAll(opList);
+                } else {
+                    result.put(JBQueryOperation.AND_OP, opList);
+                }
+            } else {
+                switch (ops.size()) {
+                    case 0:
+                        break;
+                    case 1:
+                        ops.forEach(op -> result.put(key, op.toResult()));
+                        break;
+                    default:
+                        List<Object> opList = new ArrayList<>();
+                        Map<String, Object> opMap = new HashMap<>();
+                        final boolean[] hasEqual = {false};
+                        ops.forEach(op -> {
+                            opList.add(op.toResult(key));
+                            if (JBQueryOperation.EQUAL_OP.equals(op.getOp())) {
+                                hasEqual[0] = true;
+                            }
+                            if (!hasEqual[0]) {
+                                opMap.putAll((Map<? extends String, ?>) op.toResult());
+                            }
+
+                        });
+                        if (hasEqual[0]) {
+                            List<Object> existsAnd = (List<Object>) result.get(JBQueryOperation.AND_OP);
+                            if (existsAnd != null) {
+                                existsAnd.addAll(opList);
+                            } else {
+                                result.put(JBQueryOperation.AND_OP, opList);
+                            }
+                        } else {
+                            result.put(key, opMap);
+                        }
+                        break;
+
+                }
+            }
+        });
+        return result;
+    }
+
+    public Map<String, String> assembleParameters() {
+        if (where.size() > 0) {
+            parameters.put(WHERE, JBUtils.writeValueAsString(compileWhereOperationMap()));
+        }
+        if (limit > 0) {
+            parameters.put(LIMIT, String.valueOf(limit));
+        }
+        if (skip > 0) {
+            parameters.put(SKIP, String.valueOf(skip));
+        }
+        if (!JBUtils.isEmpty(order)) {
+            parameters.put(ORDER, order);
+        }
+        if (include != null && include.size() > 0) {
+            parameters.put(INCLUDE, String.join(",", include));
+        }
+        if (selectedKeys != null && selectedKeys.size() > 0) {
+            parameters.put(KEYS, String.join(",", selectedKeys));
+        }
+        return parameters;
+    }
+
+    public void addWhereItem(JBQueryOperation op) {
+        List<JBQueryOperation> ops = where.get(op.getKey());
+        if (ops == null) {
+            ops = new LinkedList<>();
+            where.put(op.getKey(), ops);
+        }
+        ops.removeIf(operation -> operation.sameOp(op));
+        ops.add(op);
+    }
+
+    public void addWhereItem(String key, String op, Object value) {
+        addWhereItem(new JBQueryOperation(key, value, op));
+    }
+
+    public void addOrItems(JBQueryOperation op) {
+        List<JBQueryOperation> ops = where.get(JBQueryOperation.OR_OP);
+        if (ops == null) {
+            ops = new LinkedList<>();
+            where.put(JBQueryOperation.OR_OP, ops);
+        }
+        ops.removeIf(operation -> operation.sameOp(op));
+        ops.add(op);
+    }
+
+    public void addAndItems(JBQueryConditions conditions) {
+        Map<String, Object> queryOperationMap = conditions.compileWhereOperationMap();
+        JBQueryOperation op = new JBQueryOperation(JBQueryOperation.AND_OP, queryOperationMap, JBQueryOperation.AND_OP);
+        List<JBQueryOperation> ops = where.get(JBQueryOperation.AND_OP);
+        if (ops == null) {
+            ops = new LinkedList<>();
+            where.put(JBQueryOperation.AND_OP, ops);
+        }
+        ops.removeIf(operation -> operation.sameOp(op));
+        ops.add(op);
+    }
+
+    public void whereEqualTo(String key, Object value) {
+        if (value instanceof JBObject) {
+            addWhereItem(key, JBQueryOperation.EQUAL_OP, ((JBObject) value).getPointer());
+        } else {
+            addWhereItem(key, JBQueryOperation.EQUAL_OP, value);
+        }
+    }
+
+    public void whereNotEqualTo(String key, Object value) {
+        addWhereItem(key, "$ne", value);
+    }
+
+    public void whereExists(String key) {
+        addWhereItem(key, "$exists", true);
+    }
+
+    public void whereNotExist(String key) {
+        addWhereItem(key, "$exists", false);
+    }
+
+    public void whereGreaterThanOrEqualTo(String key, Object value) {
+        addWhereItem(key, "$gte", value);
+    }
+
+    public void whereGreaterThan(String key, Object value) {
+        addWhereItem(key, "$gt", value);
+    }
+
+    public void whereLessThan(String key, Object value) {
+        addWhereItem(key, "$lt", value);
+    }
+
+    public void whereLessThanOrEqualTo(String key, Object value) {
+        addWhereItem(key, "$lte", value);
+    }
+
+    public void whereContainedIn(String key, Collection<? extends Object> values) {
+        addWhereItem(key, "$in", values);
+    }
+
+    public void whereNotContainedIn(String key, Collection<? extends Object> values) {
+        addWhereItem(key, "$nin", values);
+    }
+
+    public void whereStartWith(String key, String prefix) {
+        whereMatches(key, String.format("^%s.*", prefix));
+    }
+
+    public void whereEndWith(String key, String suffix) {
+        whereMatches(key, String.format(".*%s$", suffix));
+    }
+
+    public void whereContains(String key, String substring) {
+        whereMatches(key, String.format(".*%s.*", substring));
+    }
+
+    public void whereMatches(String key, String regex) {
+        addWhereItem(key, "$regex", regex);
+    }
+
+    public void whereMatches(String key, String regex, String modifiers) {
+        addWhereItem(key, "$regex", regex);
+        addWhereItem(key, "$options", modifiers);
+    }
+
+
+}
