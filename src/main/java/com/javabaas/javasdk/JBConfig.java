@@ -25,7 +25,17 @@ public class JBConfig {
     }
 
     public static void useApp(JBApp app) {
-        JBConfig.getInstance().initConfig(null, app.getId(), app.getKey(), app.getMasterKey(), null);
+        if (app == null) {
+            JBConfig.getInstance().removeAppConfig();
+        } else {
+            JBConfig.getInstance().initConfig(null, app.getId(), app.getKey(), app.getMasterKey(), null);
+        }
+    }
+
+    public void removeAppConfig() {
+        this.masterKey = null;
+        this.key = null;
+        this.appId = null;
     }
 
     private JBConfig() {}

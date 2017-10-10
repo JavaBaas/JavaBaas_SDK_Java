@@ -191,7 +191,6 @@ public class JBApp {
                     JBApp app = getAppFromMap((Map<String, Object>) result.getData().get("result"));
                     callback.done(true, app, null);
                 }
-
             }
 
             @Override
@@ -292,6 +291,99 @@ public class JBApp {
                 }
             }
         });
+    }
+
+    public static JBAppExport export(String appId) throws JBException {
+        final JBAppExport[] lists = {null};
+        exportFromJavabaas(true, appId, new JBAppExportCallback() {
+            @Override
+            public void done(boolean success, JBAppExport appExport, JBException e) {
+                if (success) {
+                    lists[0] = appExport;
+                } else {
+                    JBExceptionHolder.add(e);
+                }
+            }
+        });
+        if (JBExceptionHolder.exists()) {
+            throw JBExceptionHolder.remove();
+        }
+        return lists[0];
+    }
+
+    public static void exportInBackground(String appId, JBAppExportCallback callback) {
+        exportFromJavabaas(false, appId, callback);
+    }
+
+    private static void exportFromJavabaas(final boolean sync, final String appId, final JBAppExportCallback callback) {
+        String path = JBHttpClient.getAdminPath(appId + "/" + "export");
+        JBHttpClient.INSTANCE().sendRequest(path, JBHttpMethod.GET, null, null, sync, new JBObjectCallback() {
+            @Override
+            public void onSuccess(JBResult result) {
+                if (callback == null) {
+                    return;
+                }
+                if (result.getData() == null || result.getData().get("result") == null) {
+                    callback.done(false, null,new JBException(JBCode.APP_NOT_FOUND));
+                } else {
+                    JBAppExport appExport = getAppExportFromMap((Map<String, Object>) result.getData().get("result"));
+                    callback.done(true, appExport, null);
+                }
+            }
+
+            @Override
+            public void onFailure(JBException error) {
+                if (callback != null) {
+                    callback.done(false, null, error);
+                }
+            }
+        });
+    }
+
+    public static void importData(String data) throws JBException {
+        importDataToJavabaas(true, data, new JBImportCallback() {
+            @Override
+            public void done(boolean success, JBException e) {
+                if (!success) {
+                    JBExceptionHolder.add(e);
+                }
+            }
+        });
+        if (JBExceptionHolder.exists()) {
+            throw JBExceptionHolder.remove();
+        }
+    }
+
+    public static void importDataInBackground(String data, JBImportCallback callback) {
+        importDataToJavabaas(false, data, callback);
+    }
+
+    private static void importDataToJavabaas(final boolean sync, final String data, JBImportCallback callback) {
+        String path = JBHttpClient.getAdminPath("import");
+        Map<String, Object> body = JBUtils.readValue(data, Map.class);
+        JBHttpClient.INSTANCE().sendRequest(path, JBHttpMethod.POST, null, body, sync, new JBObjectCallback() {
+            @Override
+            public void onSuccess(JBResult result) {
+                if (callback == null) {
+                    return;
+                }
+                callback.done(true, null);
+            }
+
+            @Override
+            public void onFailure(JBException error) {
+                if (callback == null) {
+                    return;
+                }
+                callback.done(false, error);
+            }
+        });
+    }
+
+    private static JBAppExport getAppExportFromMap(Map<String, Object> map) {
+        String exportStr = JBUtils.writeValueAsString(map);
+        JBAppExport appExport = JBUtils.readValue(exportStr, JBAppExport.class);
+        return appExport;
     }
 
     private static List<JBApp> getAppListFromMap(LinkedHashMap<String, Object> map) {
@@ -542,6 +634,72 @@ public class JBApp {
         @Override
         public String toString() {
             return super.toString() + " code:" + this.code + " value:" + this.value;
+        }
+    }
+
+    public static class JBAppExport {
+        private String id;
+        private String name;
+        private String key;
+        private String masterKey;
+        private CloudSetting cloudSetting;
+        private List<JBClazz.JBClazzExport> clazzs;
+        private AppAccounts appAccounts;
+
+        public String getId() {
+            return id;
+        }
+
+        public void setId(String id) {
+            this.id = id;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        public String getKey() {
+            return key;
+        }
+
+        public void setKey(String key) {
+            this.key = key;
+        }
+
+        public String getMasterKey() {
+            return masterKey;
+        }
+
+        public void setMasterKey(String masterKey) {
+            this.masterKey = masterKey;
+        }
+
+        public CloudSetting getCloudSetting() {
+            return cloudSetting;
+        }
+
+        public void setCloudSetting(CloudSetting cloudSetting) {
+            this.cloudSetting = cloudSetting;
+        }
+
+        public List<JBClazz.JBClazzExport> getClazzs() {
+            return clazzs;
+        }
+
+        public void setClazzs(List<JBClazz.JBClazzExport> clazzs) {
+            this.clazzs = clazzs;
+        }
+
+        public AppAccounts getAppAccounts() {
+            return appAccounts;
+        }
+
+        public void setAppAccounts(AppAccounts appAccounts) {
+            this.appAccounts = appAccounts;
         }
     }
 

@@ -293,6 +293,98 @@ public class JBClazz {
         });
     }
 
+    public static JBClazzExport export(String className) throws JBException {
+        final JBClazzExport[] lists = {null};
+        exportFromJavabaas(true, className, new JBClazzExportCallback() {
+            @Override
+            public void done(boolean success, JBClazzExport clazzExport, JBException e) {
+                if (success) {
+                    lists[0] = clazzExport;
+                } else {
+                    JBExceptionHolder.add(e);
+                }
+            }
+        });
+        if (JBExceptionHolder.exists()) {
+            throw JBExceptionHolder.remove();
+        }
+        return lists[0];
+    }
+
+    public static void exportInBackground(String className, JBClazzExportCallback callback) {
+        exportFromJavabaas(false, className, callback);
+    }
+
+    private static void exportFromJavabaas(final boolean sync, final String className, final JBClazzExportCallback callback) {
+        String path = JBHttpClient.getClazzPath(className + "/" + "export");
+        JBHttpClient.INSTANCE().sendRequest(path, JBHttpMethod.GET, null, null, sync, new JBObjectCallback() {
+            @Override
+            public void onSuccess(JBResult result) {
+                if (callback == null) {
+                    return;
+                }
+                if (result.getData() == null || result.getData().get("result") == null) {
+                    callback.done(false, null,new JBException(JBCode.CLAZZ_NOT_FOUND));
+                } else {
+                    JBClazzExport clazzExport = getClazzExportFromMap((Map<String, Object>) result.getData().get("result"));
+                    callback.done(true, clazzExport, null);
+                }
+            }
+
+            @Override
+            public void onFailure(JBException error) {
+                if (callback != null) {
+                    callback.done(false, null, error);
+                }
+            }
+        });
+    }
+
+    public static void importData(String data) throws JBException {
+        importDataToJavabaas(true, data, new JBImportCallback() {
+            @Override
+            public void done(boolean success, JBException e) {
+                if (!success) {
+                    JBExceptionHolder.add(e);
+                }
+            }
+        });
+        if (JBExceptionHolder.exists()) {
+            throw JBExceptionHolder.remove();
+        }
+    }
+
+    public static void importDataInBackground(String data, JBImportCallback callback) {
+        importDataToJavabaas(false, data, callback);
+    }
+
+    private static void importDataToJavabaas(final boolean sync, final String data, JBImportCallback callback) {
+        String path = JBHttpClient.getClazzPath("import");
+        Map<String, Object> body = JBUtils.readValue(data, Map.class);
+        JBHttpClient.INSTANCE().sendRequest(path, JBHttpMethod.POST, null, body, sync, new JBObjectCallback() {
+            @Override
+            public void onSuccess(JBResult result) {
+                if (callback != null) {
+                    callback.done(true, null);
+                }
+            }
+
+            @Override
+            public void onFailure(JBException error) {
+                if (callback == null) {
+                    return;
+                }
+                callback.done(false, error);
+            }
+        });
+    }
+
+    private static JBClazzExport getClazzExportFromMap(Map<String, Object> map) {
+        String exportStr = JBUtils.writeValueAsString(map);
+        JBClazzExport clazzExport = JBUtils.readValue(exportStr, JBClazzExport.class);
+        return clazzExport;
+    }
+
     private static List<JBClazz> getClazzListFromMap(LinkedHashMap<String, Object> map) {
         if (map == null || map.get("result") == null) {return new LinkedList<>();}
         List<Map<String, Object>> maps = (List<Map<String, Object>>) map.get("result");
@@ -385,6 +477,54 @@ public class JBClazz {
             return value;
         }
 
+    }
+
+    public static class JBClazzExport {
+        private String id;
+        private String name;
+        private JBClazzAcl acl;
+        private boolean internal;
+        private List<JBField.JBFieldExport> fields;
+
+        public String getId() {
+            return id;
+        }
+
+        public void setId(String id) {
+            this.id = id;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        public JBClazzAcl getAcl() {
+            return acl;
+        }
+
+        public void setAcl(JBClazzAcl acl) {
+            this.acl = acl;
+        }
+
+        public boolean isInternal() {
+            return internal;
+        }
+
+        public void setInternal(boolean internal) {
+            this.internal = internal;
+        }
+
+        public List<JBField.JBFieldExport> getFields() {
+            return fields;
+        }
+
+        public void setFields(List<JBField.JBFieldExport> fields) {
+            this.fields = fields;
+        }
     }
 
 }
