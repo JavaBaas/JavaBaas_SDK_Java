@@ -160,6 +160,14 @@ public class JBHttpClient {
         return getPath("master/clazz/" + className + "/field", extra);
     }
 
+    public static String getApiStatPath() {
+        return getPath("master/apiStat", null);
+    }
+
+    public static String getAccountPath(int type) {
+        return getPath("master/account/setAccount", String.valueOf(type));
+    }
+
     private static String getPath(String domain, String extra) {
         StringBuffer urlPath =  new StringBuffer(JBConfig.getInstance().remote);
         if (JBUtils.isEmpty(domain)) {

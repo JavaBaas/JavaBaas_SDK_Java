@@ -2,6 +2,7 @@ package com.javabaas.javasdk;
 
 import com.javabaas.javasdk.callback.*;
 
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
@@ -380,6 +381,113 @@ public class JBApp {
         });
     }
 
+    public static List<Long> getApiStat(JBApiStat apiStat) throws JBException {
+        final List<Long>[] result = new List[]{null};
+        getApiStatFromJavabaas(true, apiStat, new JBApiStatListCallback() {
+            @Override
+            public void done(boolean success, List<Long> list, JBException e) {
+                if (success) {
+                    result[0] = list;
+                } else {
+                    JBExceptionHolder.add(e);
+                }
+            }
+        });
+        if (JBExceptionHolder.exists()) {
+            throw JBExceptionHolder.remove();
+        }
+        return result[0];
+    }
+
+    public static void getApiStatInBackground(JBApiStat apiStat, JBApiStatListCallback callback) {
+        getApiStatFromJavabaas(false, apiStat, callback);
+    }
+
+    private static void getApiStatFromJavabaas(final boolean sync, final JBApiStat apiStat, final JBApiStatListCallback callback) {
+        String path = JBHttpClient.getApiStatPath();
+        JBHttpParams params = getParamsFromApiStat(apiStat);
+
+        JBHttpClient.INSTANCE().sendRequest(path, JBHttpMethod.GET, params, null, sync, new JBObjectCallback() {
+            @Override
+            public void onSuccess(JBResult result) {
+                List<Long> list = getApiStatListFromMap(result.getData());
+                if (callback != null) {
+                    callback.done(true, list, null);
+                }
+            }
+
+            @Override
+            public void onFailure(JBException error) {
+                if (callback != null) {
+                    callback.done(false, null, error);
+                }
+            }
+        });
+    }
+
+    public static void setAccount(AccountType type, Account account) throws JBException {
+        setAccountToJavabaas(true, type, account, new JBSaveCallback() {
+            @Override
+            public void done(boolean success, JBException e) {
+                if (!success) {
+                    JBExceptionHolder.add(e);
+                }
+            }
+        });
+        if (JBExceptionHolder.exists()) {
+            throw JBExceptionHolder.remove();
+        }
+    }
+
+    public static void setAccountInBackground(AccountType type, Account account, JBSaveCallback callback) {
+        setAccountToJavabaas(false, type, account, callback);
+    }
+
+    private static void setAccountToJavabaas(final boolean sync, final AccountType type, final Account account, final JBSaveCallback callback) {
+        String path = JBHttpClient.getAccountPath(type.getCode());
+        JBHttpClient.INSTANCE().sendRequest(path, JBHttpMethod.PUT, null, account, sync, new JBObjectCallback() {
+            @Override
+            public void onFailure(JBException error) {
+                if (callback != null) {
+                    callback.done(false, error);
+                }
+            }
+
+            @Override
+            public void onSuccess(JBResult result) {
+                if (callback != null) {
+                    callback.done(true, null);
+                }
+            }
+        });
+    }
+
+    private static List<Long> getApiStatListFromMap(Map<String, Object> map) {
+        if (map == null || map.get("result") == null) {return new LinkedList<>();}
+        List<Long> list = (List<Long>) map.get("result");
+        return list;
+    }
+
+    private static JBHttpParams getParamsFromApiStat(JBApiStat apiStat) {
+        JBHttpParams params = new JBHttpParams();
+        if (!JBUtils.isEmpty(apiStat.getClazz())) {
+            params.put("clazz", apiStat.getClazz());
+        }
+        if (apiStat.getMethod() != null && !JBUtils.isEmpty(apiStat.getMethod().value)) {
+            params.put("method", apiStat.getMethod().value);
+        }
+        if (!JBUtils.isEmpty(apiStat.getPlat())) {
+            params.put("plat", apiStat.getPlat());
+        }
+        if (!JBUtils.isEmpty(apiStat.getFrom())) {
+            params.put("from", apiStat.getFrom());
+        }
+        if (!JBUtils.isEmpty(apiStat.getTo())) {
+            params.put("to", apiStat.getTo());
+        }
+        return params;
+    }
+
     private static JBAppExport getAppExportFromMap(Map<String, Object> map) {
         String exportStr = JBUtils.writeValueAsString(map);
         JBAppExport appExport = JBUtils.readValue(exportStr, JBAppExport.class);
@@ -703,4 +811,88 @@ public class JBApp {
         }
     }
 
+    public static class JBApiStat {
+        private String plat;
+        private String clazz;
+        private JBApiMethod method;
+        private String from;
+        private String to;
+
+        public JBApiStat(String plat, String clazz, JBApiMethod method, String from, String to) {
+            this.plat = plat;
+            this.clazz = clazz;
+            this.method = method;
+            this.from = from;
+            this.to = to;
+        }
+
+        public JBApiMethod getMethod() {
+            return method;
+        }
+
+        public void setMethod(JBApiMethod method) {
+            this.method = method;
+        }
+
+        public String getPlat() {
+            return plat;
+        }
+
+        public void setPlat(String plat) {
+            this.plat = plat;
+        }
+
+        public String getClazz() {
+            return clazz;
+        }
+
+        public void setClazz(String clazz) {
+            this.clazz = clazz;
+        }
+
+        public String getFrom() {
+            return from;
+        }
+
+        public void setFrom(String from) {
+            this.from = from;
+        }
+
+        public String getTo() {
+            return to;
+        }
+
+        public void setTo(String to) {
+            this.to = to;
+        }
+    }
+
+    public static enum JBApiMethod {
+
+        INSERT("insert"),
+        UPDATE("update"),
+        FIND("find"),
+        DELETE("delete");
+
+        private String value;
+
+        JBApiMethod(String value) {
+            this.value = value;
+        }
+
+        @Override
+        public String toString() {
+            return value;
+        }
+
+        public static JBApiMethod get(String value) {
+            JBApiMethod[] methods = JBApiMethod.class.getEnumConstants();
+            for (JBApiMethod method : methods) {
+                if (method.value.equals(value)) {
+                    return method;
+                }
+            }
+            return null;
+        }
+    }
 }
