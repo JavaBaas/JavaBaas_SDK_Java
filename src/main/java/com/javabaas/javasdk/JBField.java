@@ -94,7 +94,7 @@ public class JBField {
         }
     }
 
-    public void savaInBackground(JBSaveCallback callback) {
+    public void saveInBackground(JBSaveCallback callback) {
         saveToJavabaas(false, callback);
     }
 
