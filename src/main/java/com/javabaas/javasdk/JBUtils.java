@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.regex.Pattern;
 
@@ -178,6 +179,44 @@ public class JBUtils {
         } else {
             return new JBObject(className);
         }
+    }
+
+    private static final ThreadLocal<SimpleDateFormat> THREAD_LOCAL_DATE_FORMAT =
+            new ThreadLocal<SimpleDateFormat>();
+    private static final String dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
+
+    public static Date dateFromString(String content) {
+        if (isEmpty(content))
+            return null;
+        if (isDigitString(content)) {
+            return new Date(Long.parseLong(content));
+        }
+        Date date = null;
+        SimpleDateFormat format = THREAD_LOCAL_DATE_FORMAT.get();
+        // reuse date format.
+        if (format == null) {
+            format = new SimpleDateFormat(dateFormat);
+            format.setTimeZone(TimeZone.getTimeZone("UTC"));
+            THREAD_LOCAL_DATE_FORMAT.set(format);
+        }
+        try {
+            date = format.parse(content);
+        } catch (Exception exception) {
+
+        }
+        return date;
+    }
+
+    public static boolean isDigitString(String s) {
+        if (s == null)
+            return false;
+        for (int i = 0; i < s.length(); i++) {
+            char c = s.charAt(i);
+            if (!Character.isDigit(c)) {
+                return false;
+            }
+        }
+        return true;
     }
 
     /****************JSON BEGIN****************/

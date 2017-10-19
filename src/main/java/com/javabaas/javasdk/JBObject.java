@@ -138,8 +138,6 @@ public class JBObject {
         INVALID_KEYS.add("targetClass");
     }
 
-
-
     public JBObject() {
         objectId = "";
         serverData = new HashMap<>();
@@ -178,7 +176,9 @@ public class JBObject {
         return true;
     }
 
-
+    public Date getDate(String key) {
+        return JBUtils.dateFromString((String) get(key));
+    }
 
     public void removeKey(String key) {
         try {
@@ -215,7 +215,9 @@ public class JBObject {
     }
 
     public void addArray(String key, Object object) {
-
+        List<Object> list = new ArrayList<>();
+        list.add(object);
+        addArray(key, list);
     }
 
     public void addArray(String key, Collection<?> list) {
