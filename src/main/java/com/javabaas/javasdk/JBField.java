@@ -300,7 +300,9 @@ public class JBField {
         if (map == null || map.get("result") == null) {return new LinkedList<>();}
         List<Map<String, Object>> maps = (List<Map<String, Object>>) map.get("result");
         List<JBField> list = new LinkedList<>();
-        maps.forEach(o -> list.add(copyFieldFromMap(o)));
+        for (Map<String, Object> objectMap : maps) {
+            list.add(copyFieldFromMap(objectMap));
+        }
         return list;
     }
 

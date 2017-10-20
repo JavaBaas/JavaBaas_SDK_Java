@@ -2,7 +2,6 @@ package com.javabaas.javasdk;
 
 import com.javabaas.javasdk.callback.*;
 
-import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
@@ -359,7 +358,7 @@ public class JBApp {
         importDataToJavabaas(false, data, callback);
     }
 
-    private static void importDataToJavabaas(final boolean sync, final String data, JBImportCallback callback) {
+    private static void importDataToJavabaas(final boolean sync, final String data, final JBImportCallback callback) {
         String path = JBHttpClient.getAdminPath("import");
         Map<String, Object> body = JBUtils.readValue(data, Map.class);
         JBHttpClient.INSTANCE().sendRequest(path, JBHttpMethod.POST, null, body, sync, new JBObjectCallback() {
@@ -498,7 +497,9 @@ public class JBApp {
         if (map == null || map.get("result") == null) {return new LinkedList<>();}
         List<Map<String, Object>> maps = (List<Map<String, Object>>) map.get("result");
         List<JBApp> list = new LinkedList<>();
-        maps.forEach(o -> list.add(getAppFromMap(o)));
+        for (Map<String, Object> o : maps) {
+            list.add(getAppFromMap(o));
+        }
         return list;
     }
 

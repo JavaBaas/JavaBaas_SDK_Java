@@ -127,25 +127,27 @@ public class JBUtils {
     }
 
     public static void copyPropertiesFromMapToObject(Object object, Map<String, Object> map) {
-        map.forEach((k, v) -> checkAndSetValue(object.getClass(), object, k, v));
+        for (Map.Entry<String, Object> entry : map.entrySet()) {
+            checkAndSetValue(object.getClass(), object, entry.getKey(), entry.getValue());
+        }
     }
 
     public static void copyPropertiesFromMapToJBObject(JBObject object, Map<String, Object> map) {
-        map.forEach((k, v) -> {
-            if (k.equals(JBObject.OBJECT_ID)) {
-                object.setObjectId(v.toString());
-            } else if (k.equals(JBObject.CREATED_AT)) {
-                object.setCreatedAt(v.toString());
-            } else if (k.equals(JBObject.UPDATED_AT)) {
-                object.setUpdatedAt(v.toString());
+        for (Map.Entry<String, Object> entry : map.entrySet()) {
+            if (entry.getKey().equals(JBObject.OBJECT_ID)) {
+                object.setObjectId(entry.getValue().toString());
+            } else if (entry.getKey().equals(JBObject.CREATED_AT)) {
+                object.setCreatedAt(entry.getValue().toString());
+            } else if (entry.getKey().equals(JBObject.UPDATED_AT)) {
+                object.setUpdatedAt(entry.getValue().toString());
             } else {
-                if (v instanceof Map) {
-                    updatePropertyFromMap(object, k, (Map<String, Object>) v);
+                if (entry.getValue() instanceof Map) {
+                    updatePropertyFromMap(object, entry.getKey(), (Map<String, Object>) entry.getValue());
                 } else {
-                    object.put(k, v);
+                    object.put(entry.getKey(), entry.getValue());
                 }
             }
-        });
+        }
     }
 
     public static void updatePropertyFromMap(JBObject parent, String key, Map<String, Object> map) {

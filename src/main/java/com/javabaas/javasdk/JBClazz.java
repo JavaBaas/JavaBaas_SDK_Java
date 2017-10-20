@@ -358,7 +358,7 @@ public class JBClazz {
         importDataToJavabaas(false, data, callback);
     }
 
-    private static void importDataToJavabaas(final boolean sync, final String data, JBImportCallback callback) {
+    private static void importDataToJavabaas(final boolean sync, final String data, final JBImportCallback callback) {
         String path = JBHttpClient.getClazzPath("import");
         Map<String, Object> body = JBUtils.readValue(data, Map.class);
         JBHttpClient.INSTANCE().sendRequest(path, JBHttpMethod.POST, null, body, sync, new JBObjectCallback() {
@@ -389,7 +389,9 @@ public class JBClazz {
         if (map == null || map.get("result") == null) {return new LinkedList<>();}
         List<Map<String, Object>> maps = (List<Map<String, Object>>) map.get("result");
         List<JBClazz> list = new LinkedList<>();
-        maps.forEach(o -> list.add(copyClazzFromMap(o)));
+        for (Map<String, Object> o : maps) {
+            list.add(copyClazzFromMap(o));
+        }
         return list;
     }
 

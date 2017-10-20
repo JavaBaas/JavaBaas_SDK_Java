@@ -210,7 +210,7 @@ public class JBUser extends JBObject {
         JBHttpParams params = new JBHttpParams();
         params.put("username", username);
         params.put("password", password);
-        JBUser user = new JBUser();
+        final JBUser user = new JBUser();
         user.setUsername(username);
         JBHttpClient.INSTANCE().sendRequest(path, JBHttpMethod.GET, params, null, sync, new JBObjectCallback() {
             @Override
@@ -295,7 +295,7 @@ public class JBUser extends JBObject {
     }
 
     private static void sendRequestForLogin(final String path, final Map<String, Object> body, final boolean sync, final JBLoginCallback callback) {
-        JBUser user = new JBUser();
+        final JBUser user = new JBUser();
         JBHttpClient.INSTANCE().sendRequest(path, JBHttpMethod.POST, null, body, sync, new JBObjectCallback() {
             @Override
             public void onSuccess(JBResult result) {

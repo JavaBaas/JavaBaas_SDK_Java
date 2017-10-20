@@ -502,11 +502,11 @@ public class JBQuery<T extends JBObject> {
         } else {
             return Collections.emptyList();
         }
-        list.forEach(object -> {
+        for (Map<String, Object> object : list) {
             JBObject jbObject = new JBObject(className);
             JBUtils.copyPropertiesFromMapToJBObject(jbObject, object);
             result.add((T) jbObject);
-        });
+        }
         return result;
     }
 }

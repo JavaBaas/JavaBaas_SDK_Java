@@ -121,19 +121,26 @@ public class JBQueryConditions {
 
     public Map<String, Object> compileWhereOperationMap() {
         Map<String, Object> result = new HashMap<>();
-        where.forEach((key, ops) -> {
-            if (key.equals(JBQueryOperation.OR_OP)) {
+
+//    }
+//        where.forEach((key, ops) -> {
+        for (Map.Entry<String, List<JBQueryOperation>> entry : where.entrySet()) {
+            if (entry.getKey().equals(JBQueryOperation.OR_OP)) {
                 List<Object> opList = new ArrayList<>();
-                ops.forEach(op -> opList.add(op.toResult()));
+                for (JBQueryOperation op : entry.getValue()) {
+                    opList.add(op.toResult());
+                }
                 List<Object> existsOr = (List<Object>) result.get(JBQueryOperation.OR_OP);
                 if (existsOr != null) {
                     existsOr.addAll(opList);
                 } else {
                     result.put(JBQueryOperation.OR_OP, opList);
                 }
-            } else if (key.equals(JBQueryOperation.AND_OP)) {
+            } else if (entry.getKey().equals(JBQueryOperation.AND_OP)) {
                 List<Object> opList = new ArrayList<>();
-                ops.forEach(op -> opList.add(op.getValue()));
+                for (JBQueryOperation op : entry.getValue()) {
+                    opList.add(op.getValue());
+                }
                 List<Object> existsAnd = (List<Object>) result.get(JBQueryOperation.AND_OP);
                 if (existsAnd != null) {
                     existsAnd.addAll(opList);
@@ -141,26 +148,27 @@ public class JBQueryConditions {
                     result.put(JBQueryOperation.AND_OP, opList);
                 }
             } else {
-                switch (ops.size()) {
+                switch (entry.getValue().size()) {
                     case 0:
                         break;
                     case 1:
-                        ops.forEach(op -> result.put(key, op.toResult()));
+                        for (JBQueryOperation op : entry.getValue()) {
+                            result.put(entry.getKey(), op.toResult());
+                        }
                         break;
                     default:
                         List<Object> opList = new ArrayList<>();
                         Map<String, Object> opMap = new HashMap<>();
                         final boolean[] hasEqual = {false};
-                        ops.forEach(op -> {
-                            opList.add(op.toResult(key));
+                        for (JBQueryOperation op : entry.getValue()) {
+                            opList.add(op.toResult(entry.getKey()));
                             if (JBQueryOperation.EQUAL_OP.equals(op.getOp())) {
                                 hasEqual[0] = true;
                             }
                             if (!hasEqual[0]) {
                                 opMap.putAll((Map<? extends String, ?>) op.toResult());
                             }
-
-                        });
+                        }
                         if (hasEqual[0]) {
                             List<Object> existsAnd = (List<Object>) result.get(JBQueryOperation.AND_OP);
                             if (existsAnd != null) {
@@ -169,13 +177,13 @@ public class JBQueryConditions {
                                 result.put(JBQueryOperation.AND_OP, opList);
                             }
                         } else {
-                            result.put(key, opMap);
+                            result.put(entry.getKey(), opMap);
                         }
                         break;
 
                 }
             }
-        });
+        }
         return result;
     }
 
@@ -193,12 +201,26 @@ public class JBQueryConditions {
             parameters.put(ORDER, order);
         }
         if (include != null && include.size() > 0) {
-            parameters.put(INCLUDE, String.join(",", include));
+            parameters.put(INCLUDE, join(include, ","));
         }
         if (selectedKeys != null && selectedKeys.size() > 0) {
-            parameters.put(KEYS, String.join(",", selectedKeys));
+            parameters.put(KEYS, join(new ArrayList<>(selectedKeys), ","));
         }
         return parameters;
+    }
+
+    private String join(List<String> list, String conjunction) {
+        StringBuilder sb = new StringBuilder();
+        boolean first = true;
+        for (String item : list)
+        {
+            if (first)
+                first = false;
+            else
+                sb.append(conjunction);
+            sb.append(item);
+        }
+        return sb.toString();
     }
 
     public void addWhereItem(JBQueryOperation op) {
@@ -207,7 +229,7 @@ public class JBQueryConditions {
             ops = new LinkedList<>();
             where.put(op.getKey(), ops);
         }
-        ops.removeIf(operation -> operation.sameOp(op));
+        removeSameOperation(ops, op);
         ops.add(op);
     }
 
@@ -221,7 +243,7 @@ public class JBQueryConditions {
             ops = new LinkedList<>();
             where.put(JBQueryOperation.OR_OP, ops);
         }
-        ops.removeIf(operation -> operation.sameOp(op));
+        removeSameOperation(ops, op);
         ops.add(op);
     }
 
@@ -233,8 +255,18 @@ public class JBQueryConditions {
             ops = new LinkedList<>();
             where.put(JBQueryOperation.AND_OP, ops);
         }
-        ops.removeIf(operation -> operation.sameOp(op));
+        removeSameOperation(ops, op);
         ops.add(op);
+    }
+
+    private void removeSameOperation(List<JBQueryOperation> ops, JBQueryOperation op) {
+        Iterator<JBQueryOperation> iterator = ops.iterator();
+        while (iterator.hasNext()) {
+            JBQueryOperation operation = iterator.next();
+            if (operation.sameOp(op)) {
+                iterator.remove();
+            }
+        }
     }
 
     public void whereEqualTo(String key, Object value) {

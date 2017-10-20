@@ -114,7 +114,7 @@ public class JBObject {
         this.acl = acl;
     }
 
-    public static final Set<String> INVALID_KEYS = new HashSet<String>();
+    public static final Set<String> INVALID_KEYS = new HashSet<>();
 
     static {
         INVALID_KEYS.add("code");
@@ -248,7 +248,9 @@ public class JBObject {
                 operator = new JBOperator(operatorType);
             }
             List<Object> list = operator.getObjects();
-            objects.forEach(object -> list.add(object));
+            for (Object o : objects) {
+                list.add(o);
+            }
             operator.setObjects(list);
             operationQueue.put(key, operator);
         } catch (Exception e) {

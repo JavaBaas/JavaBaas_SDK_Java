@@ -26,7 +26,9 @@ public class JBHttpParams {
     public JBHttpParams(Map<String, String> params) {
         this();
         if (params != null) {
-            params.forEach((k, v) -> put(k, v));
+            for (Map.Entry<String, String> entry : params.entrySet()) {
+                put(entry.getKey(), entry.getValue());
+            }
         }
     }
 
@@ -56,14 +58,15 @@ public class JBHttpParams {
         } else {
             StringBuilder stringBuilder = new StringBuilder(url);
             stringBuilder.append("?");
-            final boolean[] first = {true};
-            params.forEach((k, v) -> {
-                if (!first[0]) {
+            boolean first = true;
+
+            for (Map.Entry<String, JBParam> entry : params.entrySet()) {
+                if (!first) {
                     stringBuilder.append("&");
                 }
-                stringBuilder.append(k).append("=").append(v.encodedParam);
-                first[0] = false;
-            });
+                stringBuilder.append(entry.getKey()).append("=").append(entry.getValue().encodedParam);
+                first = false;
+            }
             return stringBuilder.toString();
         }
     }

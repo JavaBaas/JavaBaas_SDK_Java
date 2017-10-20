@@ -4,7 +4,7 @@ package com.javabaas.javasdk;
  * Created by zangyilin on 2017/9/4.
  */
 public final class JBExceptionHolder {
-    private static final ThreadLocal<JBException> LOCAL = ThreadLocal.withInitial(() -> null);
+    private static final ThreadLocal<JBException> LOCAL = new ThreadLocal<>();
 
     public final static void add(JBException e) {
         LOCAL.set(e);
