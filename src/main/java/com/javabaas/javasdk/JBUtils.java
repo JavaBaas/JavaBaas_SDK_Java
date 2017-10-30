@@ -153,7 +153,7 @@ public class JBUtils {
     public static void updatePropertyFromMap(JBObject parent, String key, Map<String, Object> map) {
         String objectId = (String) map.get(JBObject.OBJECT_ID);
         String type = (String) map.get(TYPE_TAG);
-        if (JBUtils.isEmpty(objectId) && JBUtils.isEmpty(type)) {
+        if (JBUtils.isEmpty(type)) {
             parent.put(key, map);
             return;
         }

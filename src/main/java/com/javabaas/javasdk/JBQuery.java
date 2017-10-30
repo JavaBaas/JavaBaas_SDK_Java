@@ -9,7 +9,6 @@ import java.util.*;
  * Created by zangyilin on 2017/8/9.
  */
 public class JBQuery<T extends JBObject> {
-    private Class<T> clazz;
     private String className;
     private String whereSting;
     private Boolean isRunning;
@@ -17,14 +16,6 @@ public class JBQuery<T extends JBObject> {
 
     private JBQuery() {
         super();
-    }
-
-    public Class<T> getClazz() {
-        return clazz;
-    }
-
-    public void setClazz(Class<T> clazz) {
-        this.clazz = clazz;
     }
 
     public String getClassName() {
@@ -60,6 +51,7 @@ public class JBQuery<T extends JBObject> {
         conditions.setSelectedKeys(selectedKeys);
     }
 
+    // 这个只是针对传递过来json字符串，对于JBQueryConditions的where不适用
     public String getWhereSting() {
         return whereSting;
     }
@@ -85,15 +77,18 @@ public class JBQuery<T extends JBObject> {
         return conditions.getWhere();
     }
 
-    public JBQuery(String clazzName, Class<T> clazz) {
-        JBUtils.checkClassName(clazzName);
-        this.className = clazzName;
-        this.clazz = clazz;
+    public JBQuery(String className) {
+        JBUtils.checkClassName(className);
+        this.className = className;
         this.conditions = new JBQueryConditions();
     }
 
-    public JBQuery(String className) {
-        this(className, null);
+    public static JBQuery createQuery(JBObject object) {
+        if (!JBUtils.isEmpty(object.getClassName())) {
+            return new JBQuery(object.getClassName());
+        } else {
+            return null;
+        }
     }
 
     public static <T extends JBObject> JBQuery<T> getQuery(String className) {

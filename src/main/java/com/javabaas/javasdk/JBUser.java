@@ -18,6 +18,15 @@ public class JBUser extends JBObject {
     private static final String PHONE = "phone";
     private static final String CODE = "code";
     private static final String AUTH = "auth";
+    private static JBUser currentUser;
+
+    public static JBUser getCurrentUser() {
+        return currentUser;
+    }
+
+    public static void updateCurrentUser(JBUser user) {
+        JBUser.currentUser = user;
+    }
 
     public String getSessionToken() {
         return (String) get(SESSIONTOKEN);

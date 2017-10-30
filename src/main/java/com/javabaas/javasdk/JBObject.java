@@ -25,6 +25,7 @@ public class JBObject {
     ReadWriteLock lock = new ReentrantReadWriteLock();
 
     private volatile boolean fetchWhenSave = false;
+    private JBQuery query;
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
     protected String className;
@@ -68,6 +69,10 @@ public class JBObject {
 
     public void setCreatedAt(String createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public void setQuery(JBQuery query) {
+        this.query = query;
     }
 
     transient protected JBAcl acl;
@@ -322,6 +327,10 @@ public class JBObject {
         }
         JBHttpParams jbHttpParams = new JBHttpParams();
         jbHttpParams.put("fetch", this.fetchWhenSave);
+        if (this.query != null && this.query.getWhere() != null) {
+            this.query.assembleParameters();
+            jbHttpParams.put("where", JBUtils.writeValueAsString(this.query.getWhere()));
+        }
         Map<String, Object> body = getObjectBody();
         JBHttpClient.INSTANCE().sendRequest(urlPath, method, jbHttpParams, body, sync, new JBObjectCallback() {
             @Override

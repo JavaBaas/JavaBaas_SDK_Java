@@ -36,7 +36,7 @@ public class JBConfig {
         this.masterKey = null;
         this.key = null;
         this.appId = null;
-    }
+}
 
     private JBConfig() {}
 
@@ -44,7 +44,7 @@ public class JBConfig {
 
     public static JBConfig getInstance() {
         return INSTANCE;
-    }
+}
 
     private void initConfig(String remote, String appId, String key, String masterKey, String adminKey) {
         if (!JBUtils.isEmpty(remote)) {

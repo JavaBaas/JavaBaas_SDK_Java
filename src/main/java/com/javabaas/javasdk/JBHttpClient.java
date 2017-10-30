@@ -113,6 +113,9 @@ public class JBHttpClient {
         if (!JBUtils.isEmpty(adminKey)) {
             builder.addHeader("JB-AdminSign", getSign(adminKey, timestampStr, nonce));
         }
+        if (JBUser.getCurrentUser() != null && !JBUtils.isEmpty(JBUser.getCurrentUser().getObjectId())) {
+            builder.addHeader("JB-SessionToken", JBUser.getCurrentUser().getObjectId());
+        }
         return builder;
     }
 
