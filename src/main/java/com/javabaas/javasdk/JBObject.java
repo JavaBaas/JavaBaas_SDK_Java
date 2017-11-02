@@ -4,8 +4,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.javabaas.javasdk.callback.JBDeleteCallback;
 import com.javabaas.javasdk.callback.JBObjectCallback;
 import com.javabaas.javasdk.callback.JBSaveCallback;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.javabaas.javasdk.log.JBLogUtil;
 
 import java.util.*;
 import java.util.concurrent.locks.ReadWriteLock;
@@ -16,7 +15,6 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
  */
 public class JBObject {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(JBObject.class);
 
     public static final String CREATED_AT = "createdAt";
     public static final String UPDATED_AT = "updatedAt";
@@ -104,7 +102,7 @@ public class JBObject {
             lock.readLock().lock();
             value = serverData.get(key);
         } catch (Exception e) {
-            LOGGER.info(className + "-> e: " + e);
+            JBLogUtil.log.e("获取失败", e);
         } finally {
             lock.readLock().unlock();
         }
@@ -162,7 +160,7 @@ public class JBObject {
                 serverData.put(key, value);
             }
         } catch (Exception e) {
-            LOGGER.info(className + "-> e: " + e);
+            JBLogUtil.log.w("数据处理错误");
         } finally {
             lock.writeLock().unlock();
         }
@@ -175,7 +173,7 @@ public class JBObject {
             throw new IllegalArgumentException("字段不能以'_'开头");
         }
         if (INVALID_KEYS.contains(key)) {
-            LOGGER.info(className + "-> " + key + " 内部key");
+//            JBLogUtil.log.w(key + "为不可用字段");
             return false;
         }
         return true;
@@ -193,7 +191,7 @@ public class JBObject {
             }
             operationQueue.put(key, new JBOperator(JBOperatorType.DELETE));
         } catch (Exception e) {
-            LOGGER.info(className + "-> e: " + e);
+            JBLogUtil.log.w("数据处理错误");
         } finally {
             lock.writeLock().unlock();
         }
@@ -213,7 +211,7 @@ public class JBObject {
             operator.setAmount(amount.longValue());
             operationQueue.put(key, operator);
         } catch (Exception e) {
-            LOGGER.info(className + "-> e: " + e);
+            JBLogUtil.log.w("数据处理错误");
         } finally {
             lock.writeLock().unlock();
         }
@@ -259,7 +257,7 @@ public class JBObject {
             operator.setObjects(list);
             operationQueue.put(key, operator);
         } catch (Exception e) {
-            LOGGER.info(className + "-> e: " + e);
+            JBLogUtil.log.w("数据处理错误");
         } finally {
             lock.writeLock().unlock();
         }
@@ -274,9 +272,8 @@ public class JBObject {
             JBOperator operator = new JBOperator(JBOperatorType.MULTIPLY);
             operator.setAmount(amount.longValue());
             operationQueue.put(key, operator);
-
         } catch (Exception e) {
-            LOGGER.info(className + "-> e: " + e);
+            JBLogUtil.log.w("数据处理错误");
         } finally {
             lock.writeLock().unlock();
         }
@@ -329,7 +326,13 @@ public class JBObject {
         jbHttpParams.put("fetch", this.fetchWhenSave);
         if (this.query != null && this.query.getWhere() != null) {
             this.query.assembleParameters();
-            jbHttpParams.put("where", JBUtils.writeValueAsString(this.query.getWhere()));
+            try {
+                jbHttpParams.put("where", JBUtils.writeValueAsString(this.query.getWhere()));
+            } catch (JBException e) {
+                if (callback != null) {
+                    callback.done(false, e);
+                }
+            }
         }
         Map<String, Object> body = getObjectBody();
         JBHttpClient.INSTANCE().sendRequest(urlPath, method, jbHttpParams, body, sync, new JBObjectCallback() {
@@ -436,12 +439,18 @@ public class JBObject {
 
     @Override
     public String toString() {
+        String serverDataStr = "";
+        try {
+            serverDataStr = JBUtils.writeValueAsString(serverData);
+        } catch (JBException e) { }
+
         return "{" +
                 "\"className\":\"" + className + "\"" +
                 ", \"objectId\":\"" + objectId + "\"" +
                 ", \"updatedAt\":\"" + updatedAt + "\"" +
                 ", \"createdAt\":\"" + createdAt + "\"" +
-                ", \"serverData\":" + JBUtils.writeValueAsString(serverData) +
+                ", \"serverData\":" + serverDataStr +
                 '}';
+
     }
 }

@@ -31,17 +31,25 @@ public abstract class JBHttpResponseHandler implements Callback {
 
     @Override
     public void onFailure(Call call, IOException e) {
-        this.onFailure(new JBException(-1));
+        this.onFailure(new JBException(JBCode.OTHER_HTTP_ERROR));
     }
 
     @Override
     public void onResponse(Call call, Response response) throws IOException {
         String content = JBUtils.stringFromBytes(response.body().bytes());
-        JBResult result = JBUtils.readValue(content, JBResult.class);
-        if (response.code() == 200) {
-            this.onSuccess(result);
-        } else {
-            this.onFailure(new JBException(result.getCode(), result.getMessage()));
+        JBResult result = null;
+        try {
+            if (response.code() == 200) {
+                result = JBUtils.readValue(content, JBResult.class);
+                this.onSuccess(result);
+            } else if (response.code() == 400 || response.code() == 500) {
+                result = JBUtils.readValue(content, JBResult.class);
+                this.onFailure(new JBException(result.getCode(), result.getMessage()));
+            } else {
+                this.onFailure(new JBException(JBCode.OTHER_HTTP_ERROR));
+            }
+        } catch (JBException e) {
+            this.onFailure(e);
         }
     }
 

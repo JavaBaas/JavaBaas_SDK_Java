@@ -6,7 +6,7 @@ package com.javabaas.javasdk;
  */
 public enum JBCode {
     SUCCESS(0, "成功"),
-    OTHER_HTTP_ERROR(-1, "请求错误"),
+    OTHER_HTTP_ERROR(-1, "网络请求错误，请检查"),
     NOT_FOUND(404, "无效地址"),
     INTERNAL_ERROR(500, "服务器内部错误"),
     INTERNAL_JSON_ERROR(501, "JSON处理失败"),
@@ -91,22 +91,7 @@ public enum JBCode {
     SMS_SEND_INTERVAL_LIMIT(7002, "禁止连续发送"),
     SMS_HANDLER_NOT_DEFINE(7002, "短信处理器为定义"),
     SMS_HANDLER_NOT_FOUND(7003, "短信处理器未找到"),
-    // 云方法相关
-    // todo 有时间整理
-    DEVICE_WRONG_IDENTIFICATION(10001, "设备信息错误"),
-    DISCUSSION_INFO_WRONG(10002, "会议内容错误"),
-    GET_TOKEN_FAILED(10003, "获取七牛token失败"),
-    PAGE_STATUS_FINISHED(10004, "已结束的会议，内容不允许修改"),
-    PAGE_VERSION_WRONG(10005, "版本号小于当前版本号，不允许修改"),
-    DEVICE_NOT_EXIST(10006, "设备未激活或信息错误"),
-    PAGE_NOT_EXIST(10007, "Page不存在"),
-    DISCUSSION_NOT_EXIST(10008, "会议不存在"),
-    DISCUSSION_STATUS_FINISHED(10009, "会议已经结束，不能修改"),
-    CLOUD_NAME_WRONG(10010, "无效的方法名"),
-    USER_NOT_LOGIN(10011, "用户未登录"),
-    HOOK_APPID_WRONG(10012, "AppId错误"),
-    HOOK_NOT_EXIST(10013, "hook不存在"),
-    PAGE_INFO_WRONG(10014, "Page 内容错误");
+    USER_NOT_LOGIN(10011, "用户未登录");
 
     private int code;
     private String message;

@@ -189,7 +189,10 @@ public class JBQueryConditions {
 
     public Map<String, String> assembleParameters() {
         if (where.size() > 0) {
-            parameters.put(WHERE, JBUtils.writeValueAsString(compileWhereOperationMap()));
+            try {
+                parameters.put(WHERE, JBUtils.writeValueAsString(compileWhereOperationMap()));
+            } catch (JBException e) {
+            }
         }
         if (limit > 0) {
             parameters.put(LIMIT, String.valueOf(limit));

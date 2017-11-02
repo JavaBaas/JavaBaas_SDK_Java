@@ -1,19 +1,26 @@
 package com.javabaas.javasdk;
 
+import com.javabaas.javasdk.log.JBLogUtil;
+import com.javabaas.javasdk.log.JBLogger;
+
+import java.util.Date;
+import java.util.Map;
+
 /**
  * Created by zangyilin on 2017/8/10.
  */
 public class JBConfig {
-
     boolean finishInit;
     String remote;
     String appId;
     String key;
     String masterKey;
     String adminKey;
+    long adjustTime;
 
     public static void init(String remote, String appId, String key) {
         JBConfig.getInstance().initConfig(remote, appId, key, null, null);
+        JBConfig.getInstance().updateAdjustTime();
     }
 
     public static void initAdmin(String remote, String adminKey) {
@@ -29,7 +36,12 @@ public class JBConfig {
             JBConfig.getInstance().removeAppConfig();
         } else {
             JBConfig.getInstance().initConfig(null, app.getId(), app.getKey(), app.getMasterKey(), null);
+            JBConfig.getInstance().updateAdjustTime();
         }
+    }
+
+    public static void setDebugLogEnabled(boolean enable) {
+        JBLogger.instance().setDebugEnabled(enable);
     }
 
     public void removeAppConfig() {
@@ -63,5 +75,22 @@ public class JBConfig {
             this.adminKey = adminKey;
         }
         this.finishInit = true;
+    }
+
+    private void updateAdjustTime() {
+        long timestamp = new Date().getTime();
+
+        try {
+            Map<String, Object> map = JBStatus.getStatus();
+            if (map.get("time") != null) {
+                long serverTime = (long) map.get("time");
+                if (serverTime > 0) {
+                    this.adjustTime = timestamp - serverTime;
+                }
+            } else {
+            }
+        } catch (JBException e) {
+            JBLogUtil.log.w("服务器连接失败，请检查。");
+        }
     }
 }

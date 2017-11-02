@@ -44,7 +44,11 @@ public class JBResult extends HashMap<String, Object> {
     }
 
     public int getCode() {
-        return (int) get("code");
+        if (get("code") != null) {
+            return (int) get("code");
+        } else {
+            return 0;
+        }
     }
 
     public void setCode(int code) {

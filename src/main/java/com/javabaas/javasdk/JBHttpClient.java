@@ -17,17 +17,27 @@ public class JBHttpClient {
     public static final MediaType JSON = MediaType.parse("application/json");
     private static volatile JBHttpClient httpClient;
     public void sendRequest(String url, JBHttpMethod method, JBHttpParams params, Map<String, Object> body, final boolean sync, final JBObjectCallback callback) {
+        JBHttpResponseHandler handler = createPostHandler(callback);
         String wholeUrl;
         if (params != null) {
             wholeUrl = params.getWholeUrl(url);
         } else {
             wholeUrl = url;
         }
-        Request.Builder builder = getRequestBuilder();
+        Request.Builder builder;
+        try {
+            builder = getRequestBuilder();
+        } catch (JBException e) {
+            handler.onFailure(e);
+            return;
+        }
         builder.url(wholeUrl);
         RequestBody requestBody = null;
         if (body != null) {
-            requestBody = RequestBody.create(JSON, JBUtils.writeValueAsString(body));
+            try {
+                requestBody = RequestBody.create(JSON, JBUtils.writeValueAsString(body));
+            } catch (JBException e) {
+            }
         }
         switch (method) {
             case GET:
@@ -47,7 +57,7 @@ public class JBHttpClient {
                 break;
             default:
         }
-        JBHttpResponseHandler handler = createPostHandler(callback);
+
         httpClient.execute(builder.build(), sync, handler);
     }
 
@@ -84,12 +94,12 @@ public class JBHttpClient {
     }
 
 
-    private Request.Builder getRequestBuilder() {
+    private Request.Builder getRequestBuilder() throws JBException {
         if (!JBConfig.getInstance().finishInit) {
-            throw new IllegalArgumentException("JBConfig未初始化");
+            throw new JBException(JBCode.INTERNAL_ERROR.getCode(), "JBConfig未初始化");
         }
         long timestamp = new Date().getTime();
-        String timestampStr = String.valueOf(timestamp);
+        String timestampStr = String.valueOf(timestamp - JBConfig.getInstance().adjustTime);
         String nonce = UUID.randomUUID().toString().replace("-", "");
 
         Request.Builder builder = new Request.Builder();
@@ -186,5 +196,7 @@ public class JBHttpClient {
     }
 
 
-
+    public static String getStatusPath() {
+        return JBConfig.getInstance().remote;
+    }
 }

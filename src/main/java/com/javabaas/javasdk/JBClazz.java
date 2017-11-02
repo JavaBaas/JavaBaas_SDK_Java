@@ -360,7 +360,11 @@ public class JBClazz {
 
     private static void importDataToJavabaas(final boolean sync, final String data, final JBImportCallback callback) {
         String path = JBHttpClient.getClazzPath("import");
-        Map<String, Object> body = JBUtils.readValue(data, Map.class);
+        Map<String, Object> body = null;
+        try {
+            body = JBUtils.readValue(data, Map.class);
+        } catch (JBException e) {
+        }
         JBHttpClient.INSTANCE().sendRequest(path, JBHttpMethod.POST, null, body, sync, new JBObjectCallback() {
             @Override
             public void onSuccess(JBResult result) {
@@ -380,9 +384,13 @@ public class JBClazz {
     }
 
     private static JBClazzExport getClazzExportFromMap(Map<String, Object> map) {
-        String exportStr = JBUtils.writeValueAsString(map);
-        JBClazzExport clazzExport = JBUtils.readValue(exportStr, JBClazzExport.class);
-        return clazzExport;
+        try {
+            String exportStr = JBUtils.writeValueAsString(map);
+            JBClazzExport clazzExport = JBUtils.readValue(exportStr, JBClazzExport.class);
+            return clazzExport;
+        } catch (JBException e) {
+            return null;
+        }
     }
 
     private static List<JBClazz> getClazzListFromMap(LinkedHashMap<String, Object> map) {
@@ -402,9 +410,14 @@ public class JBClazz {
 
     private static JBClazz copyClazzFromMap(Map<String, Object> map) {
         if (map == null) {return null;}
-        String clazzStr = JBUtils.writeValueAsString(map);
-        JBClazz clazz = JBUtils.readValue(clazzStr, JBClazz.class);
-        return clazz;
+        try {
+            String clazzStr = JBUtils.writeValueAsString(map);
+            JBClazz clazz = JBUtils.readValue(clazzStr, JBClazz.class);
+            return clazz;
+        } catch (JBException e) {
+            return null;
+        }
+
     }
 
     public static class JBClazzAcl extends LinkedHashMap<String, Object> {
@@ -456,7 +469,11 @@ public class JBClazz {
 
         @Override
         public String toString() {
-            return JBUtils.writeValueAsString(this);
+            try {
+                return JBUtils.writeValueAsString(this);
+            } catch (JBException e) {
+                return "";
+            }
         }
     }
 

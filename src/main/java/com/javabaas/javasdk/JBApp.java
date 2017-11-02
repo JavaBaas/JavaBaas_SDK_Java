@@ -360,7 +360,12 @@ public class JBApp {
 
     private static void importDataToJavabaas(final boolean sync, final String data, final JBImportCallback callback) {
         String path = JBHttpClient.getAdminPath("import");
-        Map<String, Object> body = JBUtils.readValue(data, Map.class);
+        Map<String, Object> body;
+        try {
+            body = JBUtils.readValue(data, Map.class);
+        } catch (JBException e) {
+            body = null;
+        }
         JBHttpClient.INSTANCE().sendRequest(path, JBHttpMethod.POST, null, body, sync, new JBObjectCallback() {
             @Override
             public void onSuccess(JBResult result) {
@@ -488,9 +493,14 @@ public class JBApp {
     }
 
     private static JBAppExport getAppExportFromMap(Map<String, Object> map) {
-        String exportStr = JBUtils.writeValueAsString(map);
-        JBAppExport appExport = JBUtils.readValue(exportStr, JBAppExport.class);
-        return appExport;
+        try {
+            String exportStr = JBUtils.writeValueAsString(map);
+            JBAppExport appExport = JBUtils.readValue(exportStr, JBAppExport.class);
+            return appExport;
+        } catch (JBException e) {
+            return null;
+        }
+
     }
 
     private static List<JBApp> getAppListFromMap(LinkedHashMap<String, Object> map) {
@@ -504,22 +514,29 @@ public class JBApp {
     }
 
     private void copyAppFromMap(Map<String, Object> map) {
-        String appStr = JBUtils.writeValueAsString(map);
-        JBApp app = JBUtils.readValue(appStr, JBApp.class);
-        if (app != null) {
-            setId(app.id);
-            setName(app.name);
-            setKey(app.key);
-            setMasterKey(app.masterKey);
-            setAppAccounts(app.appAccounts);
-            setCloudSetting(app.cloudSetting);
-        }
+        try {
+            String appStr = JBUtils.writeValueAsString(map);
+            JBApp app = JBUtils.readValue(appStr, JBApp.class);
+            if (app != null) {
+                setId(app.id);
+                setName(app.name);
+                setKey(app.key);
+                setMasterKey(app.masterKey);
+                setAppAccounts(app.appAccounts);
+                setCloudSetting(app.cloudSetting);
+            }
+        } catch (JBException e) {}
+
     }
 
     private static JBApp getAppFromMap(Map<String, Object> map) {
-        String appStr = JBUtils.writeValueAsString(map);
-        JBApp app = JBUtils.readValue(appStr, JBApp.class);
-        return app;
+        try {
+            String appStr = JBUtils.writeValueAsString(map);
+            JBApp app = JBUtils.readValue(appStr, JBApp.class);
+            return app;
+        } catch (JBException e) {
+            return null;
+        }
     }
 
     private Map<String, Object> getAppMap() {
@@ -547,7 +564,11 @@ public class JBApp {
 
     @Override
     public String toString() {
-        return JBUtils.writeValueAsString(this);
+        try {
+            return JBUtils.writeValueAsString(this);
+        } catch (JBException e) {
+            return "";
+        }
     }
 
     public static class CloudSetting {

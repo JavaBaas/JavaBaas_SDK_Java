@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.javabaas.javasdk.log.JBLogUtil;
 import okhttp3.internal.http2.Header;
 
 import java.io.IOException;
@@ -18,6 +19,7 @@ import java.util.regex.Pattern;
  * Created by zangyilin on 2017/8/9.
  */
 public class JBUtils {
+
 
     static Pattern pattern = Pattern.compile("^[a-zA-Z_][a-zA-Z_0-9]*$");
     public static final String CLASSNAME_TAG = "className";
@@ -222,7 +224,7 @@ public class JBUtils {
     }
 
     /****************JSON BEGIN****************/
-    public static <T> T readValue(String content, Class<T> valueType) {
+    public static <T> T readValue(String content, Class<T> valueType) throws JBException{
         if (content == null) {
             return null;
         }
@@ -231,18 +233,19 @@ public class JBUtils {
             objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
             return objectMapper.readValue(content, valueType);
         } catch (IOException e) {
-            //todo 待修改
+            JBLogUtil.log.w("数据处理错误");
             throw new JBException(JBCode.INTERNAL_JSON_ERROR);
         }
     }
 
-    public static String writeValueAsString(Object value) {
+    public static String writeValueAsString(Object value) throws JBException{
         if (value != null) {
             try {
                 ObjectMapper objectMapper = new ObjectMapper();
                 objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
                 return objectMapper.writeValueAsString(value);
             } catch (JsonProcessingException e) {
+                JBLogUtil.log.w("数据处理错误");
                 throw new JBException(JBCode.INTERNAL_JSON_ERROR);
             }
         } else {

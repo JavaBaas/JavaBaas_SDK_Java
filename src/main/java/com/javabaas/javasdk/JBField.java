@@ -313,9 +313,13 @@ public class JBField {
 
     private static JBField copyFieldFromMap(Map<String, Object> map) {
         if (map == null) {return null;}
-        String FieldStr = JBUtils.writeValueAsString(map);
-        JBField field = JBUtils.readValue(FieldStr, JBField.class);
-        return field;
+        try {
+            String FieldStr = JBUtils.writeValueAsString(map);
+            JBField field = JBUtils.readValue(FieldStr, JBField.class);
+            return field;
+        } catch (JBException e) {
+            return null;
+        }
     }
 
     private Map<String,Object> getFieldMap() {
