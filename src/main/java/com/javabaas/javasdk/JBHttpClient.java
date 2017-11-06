@@ -173,6 +173,14 @@ public class JBHttpClient {
         return getPath("master/clazz/" + className + "/field", extra);
     }
 
+    public static String getConfigPath() {
+        return getPath("master/config", null);
+    }
+
+    public static String getConfigPath(String extra) {
+        return getPath("master/config", extra);
+    }
+
     public static String getApiStatPath() {
         return getPath("master/apiStat", null);
     }
@@ -199,4 +207,5 @@ public class JBHttpClient {
     public static String getStatusPath() {
         return JBConfig.getInstance().remote;
     }
+
 }

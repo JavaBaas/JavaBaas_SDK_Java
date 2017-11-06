@@ -283,8 +283,6 @@ public class JBQuery<T extends JBObject> {
         return this;
     }
 
-    //todo 缺少子查询
-
     public T get(String objectId) throws JBException {
         if (JBUtils.isEmpty(objectId) ) {
             throw new JBException(JBCode.REQUEST_PARAM_ERROR);
@@ -307,7 +305,7 @@ public class JBQuery<T extends JBObject> {
         }
     }
 
-    public void getInBackground(String objectId, JBGetCallback callback) {
+    public void getInBackground(String objectId, JBGetCallback<T> callback) {
         getFromJavaBaas(objectId, false, callback);
     }
 

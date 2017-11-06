@@ -13,7 +13,6 @@ public class JBApp {
     private String key;
     private String masterKey;
     private CloudSetting cloudSetting;
-    private AppAccounts appAccounts;
 
     public String getId() {
         return id;
@@ -53,14 +52,6 @@ public class JBApp {
 
     public void setCloudSetting(CloudSetting cloudSetting) {
         this.cloudSetting = cloudSetting;
-    }
-
-    public AppAccounts getAppAccounts() {
-        return appAccounts;
-    }
-
-    public void setAppAccounts(AppAccounts appAccounts) {
-        this.appAccounts = appAccounts;
     }
 
 
@@ -410,7 +401,6 @@ public class JBApp {
     private static void getApiStatFromJavabaas(final boolean sync, final JBApiStat apiStat, final JBApiStatListCallback callback) {
         String path = JBHttpClient.getApiStatPath();
         JBHttpParams params = getParamsFromApiStat(apiStat);
-
         JBHttpClient.INSTANCE().sendRequest(path, JBHttpMethod.GET, params, null, sync, new JBObjectCallback() {
             @Override
             public void onSuccess(JBResult result) {
@@ -429,8 +419,8 @@ public class JBApp {
         });
     }
 
-    public static void setAccount(AccountType type, Account account) throws JBException {
-        setAccountToJavabaas(true, type, account, new JBSaveCallback() {
+    public static void updateAppConfig(JBAppConfig config) throws JBException {
+        updateAppConfigToJavabaas(config, true, new JBUpdateCallback() {
             @Override
             public void done(boolean success, JBException e) {
                 if (!success) {
@@ -443,13 +433,22 @@ public class JBApp {
         }
     }
 
-    public static void setAccountInBackground(AccountType type, Account account, JBSaveCallback callback) {
-        setAccountToJavabaas(false, type, account, callback);
+    public static void updateAppConfigInBackground(JBAppConfig config, JBUpdateCallback callback) {
+        updateAppConfigToJavabaas(config, false, callback);
     }
 
-    private static void setAccountToJavabaas(final boolean sync, final AccountType type, final Account account, final JBSaveCallback callback) {
-        String path = JBHttpClient.getAccountPath(type.getCode());
-        JBHttpClient.INSTANCE().sendRequest(path, JBHttpMethod.PUT, null, account, sync, new JBObjectCallback() {
+    private static void updateAppConfigToJavabaas(final JBAppConfig config, final boolean sync, final JBUpdateCallback callback) {
+        String path = JBHttpClient.getConfigPath("app");
+        if (config == null) {
+            if (callback != null) {
+                callback.done(false, new JBException(JBCode.REQUEST_PARAM_ERROR.getCode(),"Config信息错误"));
+            }
+            return;
+        }
+        Map<String, Object> body = new HashMap<>();
+        body.put("key", config.getAppConfigKey().getKey());
+        body.put("value", config.getValue());
+        JBHttpClient.INSTANCE().sendRequest(path, JBHttpMethod.POST, null, body, sync, new JBObjectCallback() {
             @Override
             public void onFailure(JBException error) {
                 if (callback != null) {
@@ -461,6 +460,58 @@ public class JBApp {
             public void onSuccess(JBResult result) {
                 if (callback != null) {
                     callback.done(true, null);
+                }
+            }
+        });
+    }
+
+    public static String getAppConfig(JBAppConfigKey appConfigKey) throws JBException {
+        final String[] result = new String[1];
+        getAppConfigFromJavaBaas(appConfigKey, true, new JBGetConfigCallback() {
+            @Override
+            public void done(boolean success, String value, JBException e) {
+                if (success) {
+                    result[0] = value;
+                } else {
+                    JBExceptionHolder.add(e);
+                }
+            }
+        });
+        if (JBExceptionHolder.exists()) {
+            throw JBExceptionHolder.remove();
+        }
+        return result[0];
+    }
+
+    public static void getAppConfigInBackground(JBAppConfigKey appConfigKey, JBGetConfigCallback callback) {
+        getAppConfigFromJavaBaas(appConfigKey, false, callback);
+    }
+
+    private static void getAppConfigFromJavaBaas(final JBAppConfigKey appConfigKey, final boolean sync, JBGetConfigCallback callback) {
+        String path = JBHttpClient.getConfigPath("app");
+        JBHttpParams params = new JBHttpParams();
+        if (appConfigKey != null) {
+            params.put("key", appConfigKey.getKey());
+        }
+        JBHttpClient.INSTANCE().sendRequest(path, JBHttpMethod.GET, params, null, sync, new JBObjectCallback() {
+            @Override
+            public void onSuccess(JBResult result) {
+                if (callback == null) {
+                    return;
+                }
+                if (result.getData() != null && result.getData().get("result") != null) {
+                    Map<String, Object> map = (Map<String, Object>) result.getData().get("result");
+                    String value = (String) map.get(appConfigKey.getKey());
+                    callback.done(true, value, null);
+                } else {
+                    callback.done(false, null, new JBException(JBCode.INTERNAL_JSON_ERROR));
+                }
+            }
+
+            @Override
+            public void onFailure(JBException error) {
+                if (callback != null) {
+                    callback.done(false, null, error);
                 }
             }
         });
@@ -522,7 +573,6 @@ public class JBApp {
                 setName(app.name);
                 setKey(app.key);
                 setMasterKey(app.masterKey);
-                setAppAccounts(app.appAccounts);
                 setCloudSetting(app.cloudSetting);
             }
         } catch (JBException e) {}
@@ -555,9 +605,6 @@ public class JBApp {
         }
         if (cloudSetting != null) {
             body.put("cloudSetting", cloudSetting);
-        }
-        if (appAccounts != null) {
-            body.put("appAccounts", appAccounts);
         }
         return body;
     }
@@ -696,77 +743,6 @@ public class JBApp {
         }
     }
 
-    public static class AppAccounts extends LinkedHashMap<String, Account> {
-        public AppAccounts() {
-            super();
-        }
-
-        public Account getAccount(AccountType accountType) {
-            return get(accountType.getValue());
-        }
-
-        public void setAccount(AccountType accountType, Account account) {
-            put(accountType.getValue(), account);
-        }
-    }
-
-    public static class Account extends LinkedHashMap<String, Object> {
-        public Account() {
-            super();
-        }
-
-        public void setKey(String id) {
-            put("key", id);
-        }
-
-        public String getKey() {
-            return (String) get("key");
-        }
-
-        public void setSecret(String id) {
-            put("secret", id);
-        }
-
-        public String getSecret() {
-            return (String) get("secret");
-        }
-    }
-
-    public static enum AccountType {
-        PUSH(1, "push"),
-        WEBAPP(2, "webapp");
-
-        private int code;
-        private String value;
-
-        AccountType(int code, String value) {
-            this.code = code;
-            this.value = value;
-        }
-
-        public int getCode() {
-            return this.code;
-        }
-
-        public String getValue() {
-            return this.value;
-        }
-
-        public static AccountType getType(int code) {
-            for (AccountType accountType : AccountType.values()) {
-                if (accountType.code == code) {
-                    return accountType;
-                }
-            }
-            return null;
-        }
-
-        @Override
-        public String toString() {
-            return super.toString() + " code:" + this.code + " value:" + this.value;
-        }
-    }
-
     public static class JBAppExport {
         private String id;
         private String name;
@@ -774,7 +750,6 @@ public class JBApp {
         private String masterKey;
         private CloudSetting cloudSetting;
         private List<JBClazz.JBClazzExport> clazzs;
-        private AppAccounts appAccounts;
 
         public String getId() {
             return id;
@@ -824,13 +799,6 @@ public class JBApp {
             this.clazzs = clazzs;
         }
 
-        public AppAccounts getAppAccounts() {
-            return appAccounts;
-        }
-
-        public void setAppAccounts(AppAccounts appAccounts) {
-            this.appAccounts = appAccounts;
-        }
     }
 
     public static class JBApiStat {
@@ -886,6 +854,97 @@ public class JBApp {
 
         public void setTo(String to) {
             this.to = to;
+        }
+    }
+    public static class JBAppConfig {
+        private JBAppConfigKey appConfigKey;
+        private String value;
+
+        public JBAppConfigKey getAppConfigKey() {
+            return appConfigKey;
+        }
+
+        public void setAppConfigKey(JBAppConfigKey appConfigKey) {
+            this.appConfigKey = appConfigKey;
+        }
+
+        public String getValue() {
+            return value;
+        }
+
+        public void setValue(String value) {
+            this.value = value;
+        }
+    }
+
+    public static enum JBAppConfigKey {
+        // 短信相关
+        SMS_TRY_LIMIT("baas.sms.tryLimit", "短信_重试次数", "5"),
+        SMS_HANDLER("baas.sms.handler", "短信_发送器", "aliyun"),
+        SMS_HANDLER_ALIYUN_KEY("baas.sms.handler.aliyun.key", "短信_阿里云key", ""),
+        SMS_HANDLER_ALIYUN_SECRET("baas.sms.handler.aliyun.secret", "短信_阿里云secret", ""),
+        SMS_CODE_TEMPLATE_ID("baas.sms.codeTemplateId", "短信_验证码模版id", ""),
+        SMS_SIGN_NAME("baas.sms.signName", "短信_签名", ""),
+        SMS_SEND_INTERVAL("baas.sms.interval", "短信_发送间隔", "60"),
+        // 推送相关
+        PUSH_HANDLER("baas.push.handler","推送_处理handler","jpush"),
+        PUSH_HANDLER_JPUSH_KEY("baas.push.handler.jpush.key", "推送_极光推送key", ""),
+        PUSH_HANDLER_JPUSH_SECRET("baas.push.handler.jpush.secret", "推送_极光推送secret", ""),
+        // 文件存储相关
+        FILE_HANDLER("baas.file.handler","文件_处理handler","qiniu"),
+        FILE_HANDLER_QINIU_AK("baas.file.handler.qiniu.ak", "文件_七牛ak", ""),
+        FILE_HANDLER_QINIU_SK("baas.file.handler.qiniu.sk", "文件_七牛sk", ""),
+        FILE_HANDLER_QINIU_BUCKET("baas.file.handler.qiniu.bucket", "文件_七牛bucket", ""),
+        FILE_HANDLER_QINIU_PIPELINE("baas.file.handler.qiniu.pipeline", "文件_七牛pipeline", ""),
+        FILE_HANDLER_QINIU_URL("baas.file.handler.qiniu.url", "文件_七牛url", ""),
+        ///////// huadong/huabei/huanan/beimei/auto   一共四个zone，如果无值或者值没有匹配项，则认为是auto
+        FILE_HANDLER_QINIU_ZONE("baas.file.handler.qiniu.zone", "文件_七牛zone", ""),
+        // 微信小程序
+        WEBAPP_APPID("baas.webapp.appid", "微信小程序_appid", ""),
+        WEBAPP_SECRET("baas.webapp.secret", "微信小程序_secret", "");
+
+        private String key;
+        private String name;
+        private String defaultValue;
+
+        public String getKey() {
+            return key;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public String getDefaultValue() {
+            return defaultValue;
+        }
+
+        public static JBAppConfigKey getConfig(String key) {
+            if (JBUtils.isEmpty(key)) {
+                return null;
+            } else {
+                for (JBAppConfigKey appConfigKey : JBAppConfigKey.values()) {
+                    if (key.equals(appConfigKey.getKey())) {
+                        return appConfigKey;
+                    }
+                }
+            }
+            return null;
+        }
+
+        public static String getDefaultValue(String key) {
+            JBAppConfigKey config = getConfig(key);
+            if (config != null) {
+                return config.getDefaultValue();
+            } else {
+                return null;
+            }
+        }
+
+        JBAppConfigKey(String key, String name, String defaultValue) {
+            this.key = key;
+            this.name = name;
+            this.defaultValue = defaultValue;
         }
     }
 
