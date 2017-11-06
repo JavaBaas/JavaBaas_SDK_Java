@@ -6,7 +6,7 @@
 
     <groupId>com.javabaas</groupId>
     <artifactId>javasdk</artifactId>
-    <version>1.0</version>
+    <version>1.0.1</version>
     <packaging>jar</packaging>
     <name>JavaBaas_SDK_Java</name>
     <description>JavaBaas_SDK_Java</description>
@@ -70,9 +70,6 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-gpg-plugin</artifactId>
                 <version>1.5</version>
-                <configuration>
-                    <skip>true</skip>
-                </configuration>
                 <executions>
                     <execution>
                         <id>sign-artifacts</id>
@@ -85,8 +82,6 @@
             </plugin>
         </plugins>
     </build>
-
-
     <dependencies>
         <dependency>
             <groupId>com.squareup.okhttp3</groupId>
