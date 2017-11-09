@@ -11,6 +11,10 @@ public class JBAuth extends LinkedHashMap<String, Object> {
         super(m);
     }
 
+    public JBAuth() {
+        super();
+    }
+
     public void setAccessToken(String accessToken) {
         put("accessToken", accessToken);
     }
@@ -43,12 +47,24 @@ public class JBAuth extends LinkedHashMap<String, Object> {
         put("unionId", unionId);
     }
 
+    public void setEncryptedData(String encryptedData) {
+        put("encryptedData", encryptedData);
+    }
+
     public String getEncryptedData() {
         return (String) get("encryptedData");
     }
 
+    public void setCode(String code) {
+        put("code", code);
+    }
+
     public String getCode() {
         return (String) get("code");
+    }
+
+    public void setIv(String iv) {
+        put("iv", iv);
     }
 
     public String getIV() {

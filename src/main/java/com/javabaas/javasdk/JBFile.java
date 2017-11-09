@@ -35,7 +35,6 @@ public final class JBFile extends JBObject{
 
     public JBFile(){
         super(fileClassName());
-
     }
 
     public JBFile(String name, String url) {
@@ -74,11 +73,21 @@ public final class JBFile extends JBObject{
 
     @Override
     public String toString() {
-        return "{" +
-                "\"className\":\"" + className + "\"" +
-                ", \"objectId\":\"" + objectId + "\"" +
-                ", \"url\":\"" + url + "\"" +
-                ", \"name\":\"" + name + "\"" +
-                '}';
+        StringBuffer stringBuffer = new StringBuffer();
+        stringBuffer.append("{");
+        if (!JBUtils.isEmpty(className)) {
+            stringBuffer.append("\"className\":\"" + className + "\"");
+        }
+        if (!JBUtils.isEmpty(objectId)) {
+            stringBuffer.append(", \"objectId\":\"" + objectId + "\"");
+        }
+        if (!JBUtils.isEmpty(url)) {
+            stringBuffer.append(", \"url\":\"" + url + "\"");
+        }
+        if (!JBUtils.isEmpty(name)) {
+            stringBuffer.append(", \"name\":\"" + name + "\"");
+        }
+        stringBuffer.append("}");
+        return stringBuffer.toString();
     }
 }

@@ -96,11 +96,11 @@ public class JBUser extends JBObject {
 
     private void signUpFromJavabaas(final boolean sync, final JBSignUpCallback callback) {
         String path = JBHttpClient.getUserPath();
-        Map<String, Object> body = this.getObjectBody();
+        Map<String, Object> body = this.getObjectForSaveBody();
         sendRequestForSignUp(path, body, sync, callback);
     }
 
-    public void getSmsCode(String phone) throws JBException {
+    public static void getSmsCode(String phone) throws JBException {
         getSmsCodeFromJavabaas(phone, true, new JBGetSmsCodeCallback() {
             @Override
             public void done(boolean success, JBException e) {
@@ -114,11 +114,11 @@ public class JBUser extends JBObject {
         }
     }
 
-    public void getSmsCodeInBackground(String phone, JBGetSmsCodeCallback callback) {
+    public static void getSmsCodeInBackground(String phone, JBGetSmsCodeCallback callback) {
         getSmsCodeFromJavabaas(phone,false, callback);
     }
 
-    private void getSmsCodeFromJavabaas(final String phone, final boolean sync, final JBGetSmsCodeCallback callback) {
+    private static void getSmsCodeFromJavabaas(final String phone, final boolean sync, final JBGetSmsCodeCallback callback) {
         if (JBUtils.isEmpty(phone)) {
             callback.done(false, new JBException(JBCode.REQUEST_PARAM_ERROR));
             return;
@@ -163,7 +163,7 @@ public class JBUser extends JBObject {
         String path = JBHttpClient.getUserPath("registerWithSns/" + type.getCode());
         Map<String, Object> body = new HashMap<>();
         body.put(AUTH, auth);
-        body.put("user", getObjectBody());
+        body.put("user", getObjectForSaveBody());
         sendRequestForSignUp(path, body, sync, callback);
     }
 
@@ -326,7 +326,6 @@ public class JBUser extends JBObject {
 
     /**
      * 重置用户sessionToken
-     * 本方法需要master权限
      *
      * @param userId 用户id
      * @throws JBException 异常信息
@@ -424,7 +423,7 @@ public class JBUser extends JBObject {
             return;
         }
         String path = JBHttpClient.getUserPath(userId);
-        Map<String, Object> body = getObjectBody();
+        Map<String, Object> body = getObjectForSaveBody();
         JBHttpClient.INSTANCE().sendRequest(path, JBHttpMethod.PUT, null, body, sync, new JBObjectCallback() {
             @Override
             public void onSuccess(JBResult result) {

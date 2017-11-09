@@ -76,6 +76,7 @@ public class JBObject {
     transient protected JBAcl acl;
 
     Map<String, Object> serverData;
+    Map<String, Object> saveData;
     Map<String, JBOperator> operationQueue;
 
     public Map<String, Object> getServerData() {
@@ -144,6 +145,7 @@ public class JBObject {
     public JBObject() {
         objectId = "";
         serverData = new HashMap<>();
+        saveData = new HashMap<>();
         operationQueue = new HashMap<>();
     }
 
@@ -158,11 +160,26 @@ public class JBObject {
             lock.writeLock().lock();
             if (checkKey(key)) {
                 serverData.put(key, value);
+                updateSaveData(key, value);
             }
         } catch (Exception e) {
             JBLogUtil.log.w("数据处理错误");
         } finally {
             lock.writeLock().unlock();
+        }
+    }
+
+    private void updateSaveData(String key, Object value) {
+        if (value == null) {
+            saveData.remove(key);
+        } else if (value instanceof JBFile || value instanceof JBUser || value instanceof JBObject) {
+            Map<String, Object> map = new HashMap<>();
+            map.put("__type", value instanceof JBFile ? "File" : "Pointer");
+            map.put("className", ((JBObject)value).getClassName());
+            map.put("_id", ((JBObject)value).getObjectId());
+            saveData.put(key, map);
+        } else {
+            saveData.put(key, value);
         }
     }
 
@@ -173,7 +190,6 @@ public class JBObject {
             throw new IllegalArgumentException("字段不能以'_'开头");
         }
         if (INVALID_KEYS.contains(key)) {
-//            JBLogUtil.log.w(key + "为不可用字段");
             return false;
         }
         return true;
@@ -334,7 +350,7 @@ public class JBObject {
                 }
             }
         }
-        Map<String, Object> body = getObjectBody();
+        Map<String, Object> body = getObjectForSaveBody();
         JBHttpClient.INSTANCE().sendRequest(urlPath, method, jbHttpParams, body, sync, new JBObjectCallback() {
             @Override
             public void onSuccess(JBResult result) {
@@ -356,13 +372,13 @@ public class JBObject {
         });
     }
 
-    protected Map<String, Object> getObjectBody() {
+    protected Map<String, Object> getObjectForSaveBody() {
         Map<String, Object> body = new HashMap<>();
         if (this.acl != null) {
             body.putAll(acl.getAclMap());
         }
-        if (this.serverData.size() > 0) {
-            body.putAll(this.serverData);
+        if (this.saveData.size() > 0) {
+            body.putAll(this.saveData);
         }
         if (this.operationQueue.size() > 0) {
             body.putAll(this.operationQueue);
@@ -428,14 +444,6 @@ public class JBObject {
             lock.writeLock().unlock();
         }
     }
-
-    public Map<String, Object> getPointer() {
-        if (JBUtils.isEmpty(className) || JBUtils.isEmpty(objectId)) {
-            return null;
-        }
-        return new JBPointer(className, objectId);
-    }
-
 
     @Override
     public String toString() {

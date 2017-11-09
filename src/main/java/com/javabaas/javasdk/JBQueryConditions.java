@@ -274,7 +274,14 @@ public class JBQueryConditions {
 
     public void whereEqualTo(String key, Object value) {
         if (value instanceof JBObject) {
-            addWhereItem(key, JBQueryOperation.EQUAL_OP, ((JBObject) value).getPointer());
+            JBObject object = (JBObject) value;
+            if (!JBUtils.isEmpty(object.className) && !JBUtils.isEmpty(object.objectId)) {
+                Map<String, Object> pointer = new HashMap<>();
+                pointer.put("__type", "Pointer");
+                pointer.put("className", object.className);
+                pointer.put("_id", object.objectId);
+                addWhereItem(key, JBQueryOperation.EQUAL_OP, pointer);
+            }
         } else {
             addWhereItem(key, JBQueryOperation.EQUAL_OP, value);
         }

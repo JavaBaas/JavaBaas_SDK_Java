@@ -207,7 +207,7 @@ public class JBApp {
         }
     }
 
-    public void resetKey(int type, JBUpdateCallback callback) {
+    public void resetKeyInBackground(int type, JBUpdateCallback callback) {
         resetKeyToJavabaas(type, false, callback);
     }
 
