@@ -6,7 +6,6 @@ import okhttp3.*;
 
 import java.io.IOException;
 import java.util.Date;
-import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -16,7 +15,8 @@ public class JBHttpClient {
     OkHttpClient client;
     public static final MediaType JSON = MediaType.parse("application/json");
     private static volatile JBHttpClient httpClient;
-    public void sendRequest(String url, JBHttpMethod method, JBHttpParams params, Map<String, Object> body, final boolean sync, final JBObjectCallback callback) {
+
+    public void sendRequest(String url, JBHttpMethod method, JBHttpParams params, Object body, final boolean sync, final JBObjectCallback callback) {
         JBHttpResponseHandler handler = createPostHandler(callback);
         String wholeUrl;
         if (params != null) {
@@ -104,7 +104,7 @@ public class JBHttpClient {
 
         Request.Builder builder = new Request.Builder();
         builder.addHeader("Content-Type", "application/json");
-        builder.addHeader("JB-Plat", "cloud");
+        builder.addHeader("JB-Plat", JBConfig.getInstance().plat);
         builder.addHeader("JB-Timestamp", timestampStr);
         builder.addHeader("JB-Nonce", nonce);
         String appId = JBConfig.getInstance().appId;
@@ -173,6 +173,22 @@ public class JBHttpClient {
         return getPath("master/clazz/" + className + "/field", extra);
     }
 
+    public static String getMasterPath(String extra) {
+        return getPath("master", extra);
+    }
+
+    public static String getFilePath(String extra) {
+        return getPath("file", extra);
+    }
+
+    public static String getCloudPath(String extra) {
+        return getPath("cloud", extra);
+    }
+
+    public static String getCloudDeployPath() {
+        return getPath("master/cloud", null);
+    }
+
     public static String getConfigPath() {
         return getPath("master/config", null);
     }
@@ -207,5 +223,6 @@ public class JBHttpClient {
     public static String getStatusPath() {
         return JBConfig.getInstance().remote;
     }
+
 
 }

@@ -56,7 +56,7 @@ public class JBApp {
 
 
     public void save() throws JBException {
-        saveAppToJavabaas(true, new JBSaveCallback() {
+        saveAppToJavabaas(true, new JBBooleanCallback() {
             @Override
             public void done(boolean success, JBException e) {
                 if (!success) {
@@ -69,11 +69,11 @@ public class JBApp {
         }
     }
 
-    public void saveInBackground(JBSaveCallback callback) {
+    public void saveInBackground(JBBooleanCallback callback) {
         saveAppToJavabaas(false, callback);
     }
 
-    private void saveAppToJavabaas(final boolean sync, final JBSaveCallback callback) {
+    private void saveAppToJavabaas(final boolean sync, final JBBooleanCallback callback) {
         if (JBUtils.isEmpty(getName())) {
             callback.done(false, new JBException(JBCode.REQUEST_PARAM_ERROR.getCode(), "app名称不能为空"));
             return;
@@ -102,7 +102,7 @@ public class JBApp {
     }
 
     public void delete() throws JBException {
-        deleteAppFromJavabaas(true, new JBDeleteCallback() {
+        deleteAppFromJavabaas(true, new JBBooleanCallback() {
             @Override
             public void done(boolean success, JBException e) {
                 if (!success) {
@@ -115,11 +115,11 @@ public class JBApp {
         }
     }
 
-    public void deleteInBackground(JBDeleteCallback callback) {
+    public void deleteInBackground(JBBooleanCallback callback) {
         deleteAppFromJavabaas(false, callback);
     }
 
-    private void deleteAppFromJavabaas(final boolean sync, final JBDeleteCallback callback) {
+    private void deleteAppFromJavabaas(final boolean sync, final JBBooleanCallback callback) {
         if (JBUtils.isEmpty(getId())) {
             callback.done(false, new JBException(JBCode.REQUEST_PARAM_ERROR.getCode(), "id不能为空"));
             return;
@@ -194,7 +194,7 @@ public class JBApp {
     }
 
     public void resetKey(int type) throws JBException {
-        resetKeyToJavabaas(type, true, new JBUpdateCallback() {
+        resetKeyToJavabaas(type, true, new JBBooleanCallback() {
             @Override
             public void done(boolean success, JBException e) {
                 if (!success) {
@@ -207,11 +207,11 @@ public class JBApp {
         }
     }
 
-    public void resetKeyInBackground(int type, JBUpdateCallback callback) {
+    public void resetKeyInBackground(int type, JBBooleanCallback callback) {
         resetKeyToJavabaas(type, false, callback);
     }
 
-    public void resetKeyToJavabaas(final int type, final boolean sync, final JBUpdateCallback callback) {
+    public void resetKeyToJavabaas(final int type, final boolean sync, final JBBooleanCallback callback) {
         if (JBUtils.isEmpty(getId())) {
             callback.done(false, new JBException(JBCode.REQUEST_PARAM_ERROR.getCode(), "app名称不能为空"));
             return;
@@ -332,7 +332,7 @@ public class JBApp {
     }
 
     public static void importData(String data) throws JBException {
-        importDataToJavabaas(true, data, new JBImportCallback() {
+        importDataToJavabaas(true, data, new JBBooleanCallback() {
             @Override
             public void done(boolean success, JBException e) {
                 if (!success) {
@@ -345,11 +345,11 @@ public class JBApp {
         }
     }
 
-    public static void importDataInBackground(String data, JBImportCallback callback) {
+    public static void importDataInBackground(String data, JBBooleanCallback callback) {
         importDataToJavabaas(false, data, callback);
     }
 
-    private static void importDataToJavabaas(final boolean sync, final String data, final JBImportCallback callback) {
+    private static void importDataToJavabaas(final boolean sync, final String data, final JBBooleanCallback callback) {
         String path = JBHttpClient.getAdminPath("import");
         Map<String, Object> body;
         try {
@@ -420,7 +420,7 @@ public class JBApp {
     }
 
     public static void updateAppConfig(JBAppConfig config) throws JBException {
-        updateAppConfigToJavabaas(config, true, new JBUpdateCallback() {
+        updateAppConfigToJavabaas(config, true, new JBBooleanCallback() {
             @Override
             public void done(boolean success, JBException e) {
                 if (!success) {
@@ -433,11 +433,11 @@ public class JBApp {
         }
     }
 
-    public static void updateAppConfigInBackground(JBAppConfig config, JBUpdateCallback callback) {
+    public static void updateAppConfigInBackground(JBAppConfig config, JBBooleanCallback callback) {
         updateAppConfigToJavabaas(config, false, callback);
     }
 
-    private static void updateAppConfigToJavabaas(final JBAppConfig config, final boolean sync, final JBUpdateCallback callback) {
+    private static void updateAppConfigToJavabaas(final JBAppConfig config, final boolean sync, final JBBooleanCallback callback) {
         String path = JBHttpClient.getConfigPath("app");
         if (config == null) {
             if (callback != null) {
@@ -877,7 +877,7 @@ public class JBApp {
         }
     }
 
-    public static enum JBAppConfigKey {
+    public enum JBAppConfigKey {
         // 短信相关
         SMS_TRY_LIMIT("baas.sms.tryLimit", "短信_重试次数", "5"),
         SMS_HANDLER("baas.sms.handler", "短信_发送器", "aliyun"),
@@ -948,7 +948,7 @@ public class JBApp {
         }
     }
 
-    public static enum JBApiMethod {
+    public enum JBApiMethod {
 
         INSERT("insert"),
         UPDATE("update"),

@@ -71,7 +71,7 @@ public class JBClazz {
     }
 
     public void save() throws JBException {
-        saveToJavabaas(true, new JBSaveCallback() {
+        saveToJavabaas(true, new JBBooleanCallback() {
             @Override
             public void done(boolean success, JBException e) {
                 if (!success) {
@@ -84,11 +84,11 @@ public class JBClazz {
         }
     }
 
-    public void saveInBackdround(JBSaveCallback callback) {
+    public void saveInBackdround(JBBooleanCallback callback) {
         saveToJavabaas(false, callback);
     }
 
-    private void saveToJavabaas(final boolean sync, final JBSaveCallback callback) {
+    private void saveToJavabaas(final boolean sync, final JBBooleanCallback callback) {
         String path = JBHttpClient.getClazzPath();
         Map<String, Object> body = getClazzMap();
         JBHttpClient.INSTANCE().sendRequest(path, JBHttpMethod.POST, null, body, sync, new JBObjectCallback() {
@@ -109,7 +109,7 @@ public class JBClazz {
     }
 
     public void delete() throws JBException {
-        deleteClazzFromJavabaas(true, new JBDeleteCallback() {
+        deleteClazzFromJavabaas(true, new JBBooleanCallback() {
             @Override
             public void done(boolean success, JBException e) {
                 if (!success) {
@@ -122,11 +122,11 @@ public class JBClazz {
         }
     }
 
-    public void deleteInBackground(JBDeleteCallback callback) {
+    public void deleteInBackground(JBBooleanCallback callback) {
         deleteClazzFromJavabaas(false, callback);
     }
 
-    private void deleteClazzFromJavabaas(final boolean sync, final JBDeleteCallback callback) {
+    private void deleteClazzFromJavabaas(final boolean sync, final JBBooleanCallback callback) {
         if (JBUtils.isEmpty(getName())) {
             callback.done(false, new JBException(JBCode.REQUEST_PARAM_ERROR.getCode(), "className不能为空"));
             return;
@@ -197,7 +197,7 @@ public class JBClazz {
     }
 
     public void updateClazzAcl() throws JBException {
-        updateClazzAclToJavabaas(true, new JBUpdateCallback() {
+        updateClazzAclToJavabaas(true, new JBBooleanCallback() {
             @Override
             public void done(boolean success, JBException e) {
                 if (!success) {
@@ -210,11 +210,11 @@ public class JBClazz {
         }
     }
 
-    public void updateClazzAclInBackground(JBUpdateCallback callback) {
+    public void updateClazzAclInBackground(JBBooleanCallback callback) {
         updateClazzAclToJavabaas(false, callback);
     }
 
-    private void updateClazzAclToJavabaas(final boolean sync, final JBUpdateCallback callback) {
+    private void updateClazzAclToJavabaas(final boolean sync, final JBBooleanCallback callback) {
         if (JBUtils.isEmpty(getName())) {
             callback.done(false, new JBException(JBCode.REQUEST_PARAM_ERROR.getCode(), "className不能为空"));
             return;
@@ -341,7 +341,7 @@ public class JBClazz {
     }
 
     public static void importData(String data) throws JBException {
-        importDataToJavabaas(true, data, new JBImportCallback() {
+        importDataToJavabaas(true, data, new JBBooleanCallback() {
             @Override
             public void done(boolean success, JBException e) {
                 if (!success) {
@@ -354,11 +354,11 @@ public class JBClazz {
         }
     }
 
-    public static void importDataInBackground(String data, JBImportCallback callback) {
+    public static void importDataInBackground(String data, JBBooleanCallback callback) {
         importDataToJavabaas(false, data, callback);
     }
 
-    private static void importDataToJavabaas(final boolean sync, final String data, final JBImportCallback callback) {
+    private static void importDataToJavabaas(final boolean sync, final String data, final JBBooleanCallback callback) {
         String path = JBHttpClient.getClazzPath("import");
         Map<String, Object> body = null;
         try {
@@ -477,7 +477,7 @@ public class JBClazz {
         }
     }
 
-    public static enum ClazzAclMethod {
+    public enum ClazzAclMethod {
 
         INSERT("insert"),
         UPDATE("update"),

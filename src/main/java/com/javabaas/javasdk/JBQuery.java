@@ -434,7 +434,7 @@ public class JBQuery<T extends JBObject> {
     }
 
     public void deleteByQuery() throws Exception {
-        deleteByQueryFromJavabaas(true, new JBDeleteCallback() {
+        deleteByQueryFromJavabaas(true, new JBBooleanCallback() {
             @Override
             public void done(boolean success, JBException e) {
                 if (!success) {
@@ -451,11 +451,11 @@ public class JBQuery<T extends JBObject> {
         deleteByQueryFromJavabaas(false, null);
     }
 
-    public void deleteByQueryInBackground(JBDeleteCallback callback) {
+    public void deleteByQueryInBackground(JBBooleanCallback callback) {
         deleteByQueryFromJavabaas(false, callback);
     }
 
-    private void deleteByQueryFromJavabaas(final boolean sync, final JBDeleteCallback callback) {
+    private void deleteByQueryFromJavabaas(final boolean sync, final JBBooleanCallback callback) {
         assembleParameters();
         String path = JBHttpClient.getObjectPath(this.className, "deleteByQuery");
         JBHttpClient.INSTANCE().sendRequest(path, JBHttpMethod.DELETE, new JBHttpParams(getParameters()), null, sync, new JBObjectCallback() {

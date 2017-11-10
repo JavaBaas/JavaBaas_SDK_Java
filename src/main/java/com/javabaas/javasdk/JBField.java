@@ -1,6 +1,9 @@
 package com.javabaas.javasdk;
 
-import com.javabaas.javasdk.callback.*;
+import com.javabaas.javasdk.callback.JBBooleanCallback;
+import com.javabaas.javasdk.callback.JBFieldListCallback;
+import com.javabaas.javasdk.callback.JBGetFieldCallback;
+import com.javabaas.javasdk.callback.JBObjectCallback;
 
 import java.util.*;
 
@@ -81,7 +84,7 @@ public class JBField {
     }
 
     public void save() throws JBException {
-        saveToJavabaas(true, new JBSaveCallback() {
+        saveToJavabaas(true, new JBBooleanCallback() {
             @Override
             public void done(boolean success, JBException e) {
                 if (!success) {
@@ -94,11 +97,11 @@ public class JBField {
         }
     }
 
-    public void saveInBackground(JBSaveCallback callback) {
+    public void saveInBackground(JBBooleanCallback callback) {
         saveToJavabaas(false, callback);
     }
 
-    private void saveToJavabaas(final boolean sync, final JBSaveCallback callback) {
+    private void saveToJavabaas(final boolean sync, final JBBooleanCallback callback) {
         if (getClazz() == null || JBUtils.isEmpty(getName())) {
             callback.done(false, new JBException(JBCode.REQUEST_PARAM_ERROR));
             return;
@@ -123,7 +126,7 @@ public class JBField {
     }
 
     public void delete() throws JBException {
-        deleteFieldFromJavabaas(true, new JBDeleteCallback() {
+        deleteFieldFromJavabaas(true, new JBBooleanCallback() {
             @Override
             public void done(boolean success, JBException e) {
                 if (!success) {
@@ -136,11 +139,11 @@ public class JBField {
         }
     }
 
-    public void deleteInBackground(JBDeleteCallback callback) {
+    public void deleteInBackground(JBBooleanCallback callback) {
         deleteFieldFromJavabaas(false, callback);
     }
 
-    private void deleteFieldFromJavabaas(final boolean sync, final JBDeleteCallback callback) {
+    private void deleteFieldFromJavabaas(final boolean sync, final JBBooleanCallback callback) {
         if (getClazz() == null || JBUtils.isEmpty(getName())) {
             callback.done(false, new JBException(JBCode.REQUEST_PARAM_ERROR.getCode(), "class或者field信息不能为空"));
             return;
@@ -166,7 +169,7 @@ public class JBField {
     }
 
     public void update() throws JBException {
-        updateFromJavabaas(true, new JBUpdateCallback() {
+        updateFromJavabaas(true, new JBBooleanCallback() {
             @Override
             public void done(boolean success, JBException e) {
                 if (!success) {
@@ -179,11 +182,11 @@ public class JBField {
         }
     }
 
-    public void updateInBackground(JBUpdateCallback callback) {
+    public void updateInBackground(JBBooleanCallback callback) {
         updateFromJavabaas(false, callback);
     }
 
-    private void updateFromJavabaas(final boolean sync, final JBUpdateCallback callback) {
+    private void updateFromJavabaas(final boolean sync, final JBBooleanCallback callback) {
         if (getClazz() == null || JBUtils.isEmpty(getName())) {
             callback.done(false, new JBException(JBCode.REQUEST_PARAM_ERROR.getCode(), "class或者field信息不能为空"));
             return;

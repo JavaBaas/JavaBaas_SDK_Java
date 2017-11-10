@@ -1,9 +1,8 @@
 package com.javabaas.javasdk;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.javabaas.javasdk.callback.JBDeleteCallback;
+import com.javabaas.javasdk.callback.JBBooleanCallback;
 import com.javabaas.javasdk.callback.JBObjectCallback;
-import com.javabaas.javasdk.callback.JBSaveCallback;
 import com.javabaas.javasdk.log.JBLogUtil;
 
 import java.util.*;
@@ -309,7 +308,7 @@ public class JBObject {
     }
 
     public void save() throws JBException {
-        saveObjectToJavaBaas(true, new JBSaveCallback() {
+        saveObjectToJavaBaas(true, new JBBooleanCallback() {
             @Override
             public void done(boolean success, JBException e) {
                 if (!success) {
@@ -326,11 +325,11 @@ public class JBObject {
         saveObjectToJavaBaas(false, null);
     }
 
-    public void saveInBackground(JBSaveCallback callback) {
+    public void saveInBackground(JBBooleanCallback callback) {
         this.saveObjectToJavaBaas(false, callback);
     }
 
-    private void saveObjectToJavaBaas(final boolean sync, final JBSaveCallback callback) {
+    private void saveObjectToJavaBaas(final boolean sync, final JBBooleanCallback callback) {
         String urlPath = JBHttpClient.getObjectPath(this.className, this.objectId);
         JBHttpMethod method;
         if (!JBUtils.isEmpty(this.objectId)) {
@@ -387,7 +386,7 @@ public class JBObject {
     }
 
     public void delete() throws JBException {
-        deleteFromJavabaas(true, new JBDeleteCallback() {
+        deleteFromJavabaas(true, new JBBooleanCallback() {
             @Override
             public void done(boolean success, JBException e) {
                 if (!success) {
@@ -404,11 +403,11 @@ public class JBObject {
         deleteFromJavabaas(false, null);
     }
 
-    public void deleteInBackground(JBDeleteCallback callback) {
+    public void deleteInBackground(JBBooleanCallback callback) {
         deleteFromJavabaas(false, callback);
     }
 
-    private void deleteFromJavabaas(final boolean sync, final JBDeleteCallback callback) {
+    private void deleteFromJavabaas(final boolean sync, final JBBooleanCallback callback) {
         if (JBUtils.isEmpty(this.objectId)) {
             callback.done(false, new JBException(JBCode.OBJECT_ID_ERROR));
             return;

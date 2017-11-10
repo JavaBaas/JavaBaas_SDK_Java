@@ -1,7 +1,10 @@
 package com.javabaas.javasdk;
 
 
-import com.javabaas.javasdk.callback.*;
+import com.javabaas.javasdk.callback.JBBooleanCallback;
+import com.javabaas.javasdk.callback.JBLoginCallback;
+import com.javabaas.javasdk.callback.JBObjectCallback;
+import com.javabaas.javasdk.callback.JBUpdatePasswordCallback;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -77,7 +80,7 @@ public class JBUser extends JBObject {
     }
 
     public void signUp() throws JBException {
-        signUpFromJavabaas(true, new JBSignUpCallback() {
+        signUpFromJavabaas(true, new JBBooleanCallback() {
             @Override
             public void done(boolean success, JBException e) {
                 if (!success) {
@@ -90,18 +93,18 @@ public class JBUser extends JBObject {
         }
     }
 
-    public void signUpInBackground(JBSignUpCallback callback) {
+    public void signUpInBackground(JBBooleanCallback callback) {
         signUpFromJavabaas(false, callback);
     }
 
-    private void signUpFromJavabaas(final boolean sync, final JBSignUpCallback callback) {
+    private void signUpFromJavabaas(final boolean sync, final JBBooleanCallback callback) {
         String path = JBHttpClient.getUserPath();
         Map<String, Object> body = this.getObjectForSaveBody();
         sendRequestForSignUp(path, body, sync, callback);
     }
 
     public static void getSmsCode(String phone) throws JBException {
-        getSmsCodeFromJavabaas(phone, true, new JBGetSmsCodeCallback() {
+        getSmsCodeFromJavabaas(phone, true, new JBBooleanCallback() {
             @Override
             public void done(boolean success, JBException e) {
                 if (!success) {
@@ -114,11 +117,11 @@ public class JBUser extends JBObject {
         }
     }
 
-    public static void getSmsCodeInBackground(String phone, JBGetSmsCodeCallback callback) {
+    public static void getSmsCodeInBackground(String phone, JBBooleanCallback callback) {
         getSmsCodeFromJavabaas(phone,false, callback);
     }
 
-    private static void getSmsCodeFromJavabaas(final String phone, final boolean sync, final JBGetSmsCodeCallback callback) {
+    private static void getSmsCodeFromJavabaas(final String phone, final boolean sync, final JBBooleanCallback callback) {
         if (JBUtils.isEmpty(phone)) {
             callback.done(false, new JBException(JBCode.REQUEST_PARAM_ERROR));
             return;
@@ -142,7 +145,7 @@ public class JBUser extends JBObject {
     }
 
     public void signUpWithSns(JBAuth auth, JBSnsType type) throws JBException {
-        signUpWithSnsFromJavabaas(auth, type, true, new JBSignUpCallback() {
+        signUpWithSnsFromJavabaas(auth, type, true, new JBBooleanCallback() {
             @Override
             public void done(boolean success, JBException e) {
                 if (!success) {
@@ -155,11 +158,11 @@ public class JBUser extends JBObject {
         }
     }
 
-    public void signUpWithSnsInBackground(JBAuth auth, JBSnsType type, JBSignUpCallback callback) {
+    public void signUpWithSnsInBackground(JBAuth auth, JBSnsType type, JBBooleanCallback callback) {
         signUpWithSnsFromJavabaas(auth, type, false, callback);
     }
 
-    private void signUpWithSnsFromJavabaas(JBAuth auth, JBSnsType type, boolean sync, JBSignUpCallback callback) {
+    private void signUpWithSnsFromJavabaas(JBAuth auth, JBSnsType type, boolean sync, JBBooleanCallback callback) {
         String path = JBHttpClient.getUserPath("registerWithSns/" + type.getCode());
         Map<String, Object> body = new HashMap<>();
         body.put(AUTH, auth);
@@ -167,7 +170,7 @@ public class JBUser extends JBObject {
         sendRequestForSignUp(path, body, sync, callback);
     }
 
-    private void sendRequestForSignUp(final String path, final Map<String, Object> body, final boolean sync, final JBSignUpCallback callback) {
+    private void sendRequestForSignUp(final String path, final Map<String, Object> body, final boolean sync, final JBBooleanCallback callback) {
         JBHttpClient.INSTANCE().sendRequest(path, JBHttpMethod.POST, null, body, sync, new JBObjectCallback() {
             @Override
             public void onSuccess(JBResult result) {
@@ -399,7 +402,7 @@ public class JBUser extends JBObject {
     }
 
     public void update() throws JBException {
-        updateFromJavabaas(true, new JBUpdateCallback() {
+        updateFromJavabaas(true, new JBBooleanCallback() {
             @Override
             public void done(boolean success, JBException e) {
                 if (!success) {
@@ -412,11 +415,11 @@ public class JBUser extends JBObject {
         }
     }
 
-    public void updateInBackground(JBUpdateCallback callback) {
+    public void updateInBackground(JBBooleanCallback callback) {
         updateFromJavabaas(false, callback);
     }
 
-    private void updateFromJavabaas(final boolean sync, final JBUpdateCallback callback) {
+    private void updateFromJavabaas(final boolean sync, final JBBooleanCallback callback) {
         String userId = getObjectId();
         if (JBUtils.isEmpty(userId)) {
             callback.done(false, new JBException(JBCode.USER_NOT_LOGIN));

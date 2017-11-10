@@ -1,6 +1,6 @@
 package com.javabaas.javasdk;
 
-import com.javabaas.javasdk.log.JBLogUtil;
+import com.javabaas.javasdk.callback.JBStatusCallback;
 import com.javabaas.javasdk.log.JBLogger;
 
 import java.util.Date;
@@ -14,28 +14,34 @@ public class JBConfig {
     String remote;
     String appId;
     String key;
+    String plat;
     String masterKey;
     String adminKey;
     long adjustTime;
 
     public static void init(String remote, String appId, String key) {
-        JBConfig.getInstance().initConfig(remote, appId, key, null, null);
+        JBConfig.getInstance().initConfig(remote, appId, key, null, null, "cloud");
+        JBConfig.getInstance().updateAdjustTime();
+    }
+
+    public static void init(String remote, String appId, String key, String plat) {
+        JBConfig.getInstance().initConfig(remote, appId, key, null, null, plat);
         JBConfig.getInstance().updateAdjustTime();
     }
 
     public static void initAdmin(String remote, String adminKey) {
-        JBConfig.getInstance().initConfig(remote, null, null, null, adminKey);
+        JBConfig.getInstance().initConfig(remote, null, null, null, adminKey, "cloud");
     }
 
     public static void initMaster(String remote, String appId, String masterKey) {
-        JBConfig.getInstance().initConfig(remote, appId, null, masterKey, null);
+        JBConfig.getInstance().initConfig(remote, appId, null, masterKey, null, "cloud");
     }
 
     public static void useApp(JBApp app) {
         if (app == null) {
             JBConfig.getInstance().removeAppConfig();
         } else {
-            JBConfig.getInstance().initConfig(null, app.getId(), app.getKey(), app.getMasterKey(), null);
+            JBConfig.getInstance().initConfig(null, app.getId(), app.getKey(), app.getMasterKey(), null, "cloud");
             JBConfig.getInstance().updateAdjustTime();
         }
     }
@@ -58,7 +64,7 @@ public class JBConfig {
         return INSTANCE;
 }
 
-    private void initConfig(String remote, String appId, String key, String masterKey, String adminKey) {
+    private void initConfig(String remote, String appId, String key, String masterKey, String adminKey, String plat) {
         if (!JBUtils.isEmpty(remote)) {
             this.remote = remote.endsWith("/") ? remote : remote + "/";
         }
@@ -74,23 +80,25 @@ public class JBConfig {
         if (!JBUtils.isEmpty(adminKey)) {
             this.adminKey = adminKey;
         }
+        if (!JBUtils.isEmpty(plat)) {
+            this.plat = plat;
+        }
         this.finishInit = true;
     }
 
     private void updateAdjustTime() {
         long timestamp = new Date().getTime();
 
-        try {
-            Map<String, Object> map = JBStatus.getStatus();
-            if (map.get("time") != null) {
-                long serverTime = (long) map.get("time");
-                if (serverTime > 0) {
-                    this.adjustTime = timestamp - serverTime;
+        JBStatus.getStatusInBackground(new JBStatusCallback() {
+            @Override
+            public void done(boolean success, Map<String, Object> status, JBException e) {
+                if (success && status.get("time") != null) {
+                    long serverTime = (long) status.get("time");
+                    if (serverTime > 0) {
+                        JBConfig.getInstance().adjustTime = timestamp - serverTime;
+                    }
                 }
-            } else {
             }
-        } catch (JBException e) {
-            JBLogUtil.log.w("服务器连接失败，请检查。");
-        }
+        });
     }
 }
