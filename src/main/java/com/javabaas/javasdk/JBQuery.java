@@ -51,12 +51,18 @@ public class JBQuery<T extends JBObject> {
         conditions.setSelectedKeys(selectedKeys);
     }
 
-    // 这个只是针对传递过来json字符串，对于JBQueryConditions的where不适用
+    /**
+     * 这个只是针对传递过来json字符串，对于JBQueryConditions的where不适用
+     * @return string
+     */
     public String getWhereSting() {
         return whereSting;
     }
 
-    // 这个会把其他where条件全部替换
+    /**
+     * 这个会把其他where条件全部替换
+     * @param whereSting 查询语句
+     */
     public void setWhereSting(String whereSting) {
         this.whereSting = whereSting;
     }

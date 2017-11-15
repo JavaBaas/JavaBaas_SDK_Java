@@ -18,12 +18,6 @@ public class JBHttpClient {
 
     public void sendRequest(String url, JBHttpMethod method, JBHttpParams params, Object body, final boolean sync, final JBObjectCallback callback) {
         JBHttpResponseHandler handler = createPostHandler(callback);
-        String wholeUrl;
-        if (params != null) {
-            wholeUrl = params.getWholeUrl(url);
-        } else {
-            wholeUrl = url;
-        }
         Request.Builder builder;
         try {
             builder = getRequestBuilder();
@@ -31,6 +25,14 @@ public class JBHttpClient {
             handler.onFailure(e);
             return;
         }
+
+        String wholeUrl;
+        if (params != null) {
+            wholeUrl = params.getWholeUrl(url);
+        } else {
+            wholeUrl = url;
+        }
+
         builder.url(wholeUrl);
         RequestBody requestBody = null;
         if (body != null) {
@@ -83,9 +85,9 @@ public class JBHttpClient {
             // 同步
             try {
                 Response response = call.execute();
-                handler.onResponse(call, response);
+                handler.onResponse(call, response, true);
             } catch (IOException e) {
-                handler.onFailure(call, e);
+                handler.onFailure(call, e, true);
             }
         } else {
             // 异步
@@ -206,6 +208,9 @@ public class JBHttpClient {
     }
 
     private static String getPath(String domain, String extra) {
+        if (JBUtils.isEmpty(JBConfig.getInstance().remote)) {
+            return null;
+        }
         StringBuffer urlPath =  new StringBuffer(JBConfig.getInstance().remote);
         if (JBUtils.isEmpty(domain)) {
             return null;
