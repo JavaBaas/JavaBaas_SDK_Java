@@ -5,6 +5,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
+ * operator操作相关
  * Created by zangyilin on 2017/9/13.
  */
 public class JBOperator extends LinkedHashMap<String, Object> {

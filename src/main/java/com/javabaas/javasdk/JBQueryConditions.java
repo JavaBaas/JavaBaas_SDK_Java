@@ -121,9 +121,6 @@ public class JBQueryConditions {
 
     public Map<String, Object> compileWhereOperationMap() {
         Map<String, Object> result = new HashMap<>();
-
-//    }
-//        where.forEach((key, ops) -> {
         for (Map.Entry<String, List<JBQueryOperation>> entry : where.entrySet()) {
             if (entry.getKey().equals(JBQueryOperation.OR_OP)) {
                 List<Object> opList = new ArrayList<>();
@@ -180,7 +177,6 @@ public class JBQueryConditions {
                             result.put(entry.getKey(), opMap);
                         }
                         break;
-
                 }
             }
         }

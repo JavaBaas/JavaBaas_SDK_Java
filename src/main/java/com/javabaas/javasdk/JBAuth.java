@@ -4,6 +4,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
+ * 第三方授权信息
  * Created by zangyilin on 2017/9/19.
  */
 public class JBAuth extends LinkedHashMap<String, Object> {

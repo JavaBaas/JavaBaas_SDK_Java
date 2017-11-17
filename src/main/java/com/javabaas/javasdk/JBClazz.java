@@ -5,6 +5,7 @@ import com.javabaas.javasdk.callback.*;
 import java.util.*;
 
 /**
+ * 类相关信息
  * Created by zangyilin on 2017/9/21.
  */
 public class JBClazz {
@@ -70,6 +71,11 @@ public class JBClazz {
         this.count = count;
     }
 
+    /**
+     * 创建类 同步
+     *
+     * @throws JBException 异常信息
+     */
     public void save() throws JBException {
         saveToJavabaas(true, new JBBooleanCallback() {
             @Override
@@ -84,6 +90,11 @@ public class JBClazz {
         }
     }
 
+    /**
+     * 创建类 异步
+     *
+     * @param callback 回调信息
+     */
     public void saveInBackdround(JBBooleanCallback callback) {
         saveToJavabaas(false, callback);
     }
@@ -108,6 +119,11 @@ public class JBClazz {
         });
     }
 
+    /**
+     * 删除类 同步
+     *
+     * @throws JBException 异常信息
+     */
     public void delete() throws JBException {
         deleteClazzFromJavabaas(true, new JBBooleanCallback() {
             @Override
@@ -122,6 +138,11 @@ public class JBClazz {
         }
     }
 
+    /**
+     * 删除类 异步
+     *
+     * @param callback 成功或失败回调
+     */
     public void deleteInBackground(JBBooleanCallback callback) {
         deleteClazzFromJavabaas(false, callback);
     }
@@ -150,6 +171,13 @@ public class JBClazz {
         });
     }
 
+    /**
+     * 查看类信息 同步
+     *
+     * @param name          类名
+     * @return              类信息
+     * @throws JBException  异常信息
+     */
     public static JBClazz get(String name) throws JBException {
         final JBClazz[] clazzes = {null};
         getFromJavabaas(name, true, new JBGetClazzCallback() {
@@ -168,6 +196,11 @@ public class JBClazz {
         return clazzes[0];
     }
 
+    /**
+     * 查看类信息 异步
+     * @param name      类名
+     * @param callback  类信息回调
+     */
     public static void getInBackground(String name, JBGetClazzCallback callback) {
         getFromJavabaas(name, false, callback);
     }
@@ -196,6 +229,11 @@ public class JBClazz {
         });
     }
 
+    /**
+     * 更新类acl信息 同步
+     *
+     * @throws JBException 异常信息
+     */
     public void updateClazzAcl() throws JBException {
         updateClazzAclToJavabaas(true, new JBBooleanCallback() {
             @Override
@@ -210,6 +248,11 @@ public class JBClazz {
         }
     }
 
+    /**
+     * 更新类acl信息 异步
+     *
+     * @param callback 更新结果回调
+     */
     public void updateClazzAclInBackground(JBBooleanCallback callback) {
         updateClazzAclToJavabaas(false, callback);
     }
@@ -251,6 +294,12 @@ public class JBClazz {
         return map;
     }
 
+    /**
+     * 查看当前app下所有的类信息 同步
+     *
+     * @return              类信息列表
+     * @throws JBException  异常信息
+     */
     public static List<JBClazz> list() throws JBException {
         final List<JBClazz>[] lists = new List[]{null};
         listFromJavabaas(true, new JBClazzListCallback() {
@@ -269,6 +318,11 @@ public class JBClazz {
         return lists[0];
     }
 
+    /**
+     * 查看当前app下所有的类信息 异步
+     *
+     * @param callback 查询结果回调
+     */
     public static void listInBackground(JBClazzListCallback callback) {
         listFromJavabaas(false, callback);
     }
@@ -293,6 +347,13 @@ public class JBClazz {
         });
     }
 
+    /**
+     * 导出类信息 同步
+     *
+     * @param className     类名
+     * @return              类的json描述信息
+     * @throws JBException  异常信息
+     */
     public static JBClazzExport export(String className) throws JBException {
         final JBClazzExport[] lists = {null};
         exportFromJavabaas(true, className, new JBClazzExportCallback() {
@@ -311,6 +372,12 @@ public class JBClazz {
         return lists[0];
     }
 
+    /**
+     * 导出类信息 异步
+     *
+     * @param className 类名
+     * @param callback  导出结果回调
+     */
     public static void exportInBackground(String className, JBClazzExportCallback callback) {
         exportFromJavabaas(false, className, callback);
     }
@@ -340,6 +407,12 @@ public class JBClazz {
         });
     }
 
+    /**
+     * 导入类信息 同步
+     *
+     * @param data          类json信息
+     * @throws JBException  异常信息
+     */
     public static void importData(String data) throws JBException {
         importDataToJavabaas(true, data, new JBBooleanCallback() {
             @Override
@@ -354,6 +427,11 @@ public class JBClazz {
         }
     }
 
+    /**
+     * 导入类信息 异步
+     * @param data      类json信息
+     * @param callback  导入结果回调
+     */
     public static void importDataInBackground(String data, JBBooleanCallback callback) {
         importDataToJavabaas(false, data, callback);
     }

@@ -50,10 +50,23 @@ public final class JBFile extends JBObject{
         return "_File";
     }
 
+    /**
+     * 新建file后是否需要fetch信息
+     * @param need needFetch
+     */
     public void needFetchFile(boolean need) {
         this.needFetch = need;
     }
 
+    /**
+     * 获取文件上传token 同步
+     *
+     * @param fileName      文件名称
+     * @param platform      上传目的平台 例如"qiniu"
+     * @param policy        上传策略
+     * @return              token信息
+     * @throws JBException  异常信息
+     */
     public static Map<String, Object> getToken(String fileName, String platform, String policy) throws JBException {
         final Map<String, Object>[] result = new Map[]{null};
         getTokenFromJavabaas(fileName, platform, policy, true, new JBFileTokenCallback() {
@@ -72,6 +85,14 @@ public final class JBFile extends JBObject{
         return result[0];
     }
 
+    /**
+     * 获取文件上传token 异步
+     *
+     * @param fileName      文件名称
+     * @param platform      上传目的平台 例如"qiniu"
+     * @param policy        上传策略
+     * @param callback      token回调
+     */
     public static void getTokenInBackground(String fileName, String platform, String policy, JBFileTokenCallback callback) {
         getTokenFromJavabaas(fileName, platform, policy, false, callback);
     }
@@ -105,6 +126,19 @@ public final class JBFile extends JBObject{
         });
     }
 
+    /**
+     * 保存文件 同步
+     * 该方法只是保存JBFile对象,如果对象中的url是对应其他网络文件,
+     * 希望拷贝到目的文件储存平台可以使用needFetchFile,设置为tre
+     * 服务端会自动将网络文件下载后保存到目的文件储存
+     *
+     * 需要注意的是,如果needFetchFile设置为true,对应的网络文件大小不能太大.太大可能会失败.
+     *
+     * @param platform      保存目的平台 例如"qiniu"
+     * @param policy        保存策略
+     * @return              保存后的JBFile信息
+     * @throws JBException  异常信息
+     */
     public JBFile saveFile(String platform, String policy) throws JBException {
         final JBFile[] result = {null};
         saveFileToJavabaas(platform, policy, true, new JBFileSaveCallback() {
@@ -123,6 +157,18 @@ public final class JBFile extends JBObject{
         return result[0];
     }
 
+    /**
+     * 保存文件 异步
+     * 该方法只是保存JBFile对象,如果对象中的url是对应其他网络文件,
+     * 希望拷贝到目的文件储存平台可以使用needFetchFile,设置为tre
+     * 服务端会自动将网络文件下载后保存到目的文件储存
+     *
+     * 需要注意的是,如果needFetchFile设置为true,对应的网络文件大小不能太大.太大可能会失败.
+     *
+     * @param platform      保存目的平台 例如"qiniu"
+     * @param policy        保存策略
+     * @param callback      文件保存回调
+     */
     public void saveFileInBackground(String platform, String policy, JBFileSaveCallback callback) {
         saveFileToJavabaas(platform, policy, false, callback);
     }

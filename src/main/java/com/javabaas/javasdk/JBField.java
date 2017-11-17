@@ -83,6 +83,11 @@ public class JBField {
         this.required = required;
     }
 
+    /**
+     * 创建字段 同步
+     *
+     * @throws JBException 异常信息
+     */
     public void save() throws JBException {
         saveToJavabaas(true, new JBBooleanCallback() {
             @Override
@@ -97,6 +102,11 @@ public class JBField {
         }
     }
 
+    /**
+     * 创建字段 异步
+     *
+     * @param callback 成功或失败回调
+     */
     public void saveInBackground(JBBooleanCallback callback) {
         saveToJavabaas(false, callback);
     }
@@ -125,6 +135,11 @@ public class JBField {
         });
     }
 
+    /**
+     * 删除字段 同步
+     *
+     * @throws JBException 异常信息
+     */
     public void delete() throws JBException {
         deleteFieldFromJavabaas(true, new JBBooleanCallback() {
             @Override
@@ -139,6 +154,11 @@ public class JBField {
         }
     }
 
+    /**
+     * 删除字段 异步
+     *
+     * @param callback 删除字段结果回调
+     */
     public void deleteInBackground(JBBooleanCallback callback) {
         deleteFieldFromJavabaas(false, callback);
     }
@@ -168,6 +188,12 @@ public class JBField {
         });
     }
 
+    /**
+     * 更新字段信息 同步
+     * 目前更新字段信息只能更新字段security和required信息
+     *
+     * @throws JBException 异常信息
+     */
     public void update() throws JBException {
         updateFromJavabaas(true, new JBBooleanCallback() {
             @Override
@@ -182,6 +208,12 @@ public class JBField {
         }
     }
 
+    /**
+     * 更新字段信息 异步
+     * 目前更新字段信息只能更新字段security和required信息
+     *
+     * @param callback
+     */
     public void updateInBackground(JBBooleanCallback callback) {
         updateFromJavabaas(false, callback);
     }
@@ -211,6 +243,14 @@ public class JBField {
         });
     }
 
+    /**
+     * 获取字段信息 同步
+     *
+     * @param className    类名
+     * @param fieldName    字段名
+     * @return             字段信息
+     * @throws JBException 异常信息
+     */
     public static JBField get(String className, String fieldName) throws JBException {
         final JBField[] fields = {null};
         getFieldFromJavabaas(className, fieldName, true, new JBGetFieldCallback() {
@@ -229,6 +269,13 @@ public class JBField {
         return fields[0];
     }
 
+    /**
+     * 获取字段信息 异步
+     *
+     * @param className    类名
+     * @param fieldName    字段名
+     * @param callback     字段信息回调
+     */
     public static void getInBackground(String className, String fieldName, JBGetFieldCallback callback) {
         getFieldFromJavabaas(className, fieldName, false, callback);
     }
@@ -257,6 +304,13 @@ public class JBField {
         });
     }
 
+    /**
+     * 查看类中所有字段信息 同步
+     *
+     * @param className     类名
+     * @return              字段信息列表
+     * @throws JBException  异常信息
+     */
     public static List<JBField> list(String className) throws JBException {
         final List<JBField>[] lists = new List[]{null};
         listFromJavabaas(className, true, new JBFieldListCallback() {
@@ -275,6 +329,12 @@ public class JBField {
         return lists[0];
     }
 
+    /**
+     * 查看类中所有字段信息 异步
+     *
+     * @param className     类名
+     * @param callback      字段信息集合回调
+     */
     public static void listInBackground(String className, JBFieldListCallback callback) {
         listFromJavabaas(className, false, callback);
     }

@@ -5,6 +5,7 @@ import com.javabaas.javasdk.callback.*;
 import java.util.*;
 
 /**
+ * 应用相关信息
  * Created by zangyilin on 2017/9/20.
  */
 public class JBApp {
@@ -54,7 +55,11 @@ public class JBApp {
         this.cloudSetting = cloudSetting;
     }
 
-
+    /**
+     * 创建应用 同步
+     *
+     * @throws JBException 异常信息
+     */
     public void save() throws JBException {
         saveAppToJavabaas(true, new JBBooleanCallback() {
             @Override
@@ -69,6 +74,11 @@ public class JBApp {
         }
     }
 
+    /**
+     * 创建应用 异步
+     *
+     * @param callback 创建回调
+     */
     public void saveInBackground(JBBooleanCallback callback) {
         saveAppToJavabaas(false, callback);
     }
@@ -101,6 +111,11 @@ public class JBApp {
         });
     }
 
+    /**
+     * 删除应用 同步
+     *
+     * @throws JBException 异常信息
+     */
     public void delete() throws JBException {
         deleteAppFromJavabaas(true, new JBBooleanCallback() {
             @Override
@@ -115,6 +130,10 @@ public class JBApp {
         }
     }
 
+    /**
+     * 删除应用 异步
+     * @param callback 删除回调
+     */
     public void deleteInBackground(JBBooleanCallback callback) {
         deleteAppFromJavabaas(false, callback);
     }
@@ -142,6 +161,13 @@ public class JBApp {
         });
     }
 
+    /**
+     * 查看应用信息 同步
+     *
+     * @param appId         应用id
+     * @return              应用信息
+     * @throws JBException  异常信息
+     */
     public static JBApp get(String appId) throws JBException {
         final JBApp[] apps = {null};
         getFromJavabaas(appId, true, new JBGetAppCallback() {
@@ -160,6 +186,11 @@ public class JBApp {
         return apps[0];
     }
 
+    /**
+     * 查看应用信息 异步
+     * @param appId     应用id
+     * @param callback  回调信息
+     */
     public static void getInBackground(String appId, JBGetAppCallback callback) {
         getFromJavabaas(appId, false, callback);
     }
@@ -193,6 +224,12 @@ public class JBApp {
         });
     }
 
+    /**
+     * 重置应用key或masterKey信息 同步
+     *
+     * @param type           1:key 2:masterKey
+     * @throws JBException   异常信息
+     */
     public void resetKey(int type) throws JBException {
         resetKeyToJavabaas(type, true, new JBBooleanCallback() {
             @Override
@@ -207,11 +244,17 @@ public class JBApp {
         }
     }
 
+    /**
+     * 重置应用key或masterKey信息 异步
+     *
+     * @param type           1:key 2:masterKey
+     * @param callback       重置回调信息
+     */
     public void resetKeyInBackground(int type, JBBooleanCallback callback) {
         resetKeyToJavabaas(type, false, callback);
     }
 
-    public void resetKeyToJavabaas(final int type, final boolean sync, final JBBooleanCallback callback) {
+    private void resetKeyToJavabaas(final int type, final boolean sync, final JBBooleanCallback callback) {
         if (JBUtils.isEmpty(getId())) {
             callback.done(false, new JBException(JBCode.REQUEST_PARAM_ERROR.getCode(), "app名称不能为空"));
             return;
@@ -242,6 +285,12 @@ public class JBApp {
         });
     }
 
+    /**
+     * 查看所有应用信息 同步
+     *
+     * @return              应用信息列表
+     * @throws JBException  异常信息
+     */
     public static List<JBApp> list() throws JBException {
         final List<JBApp>[] lists = new List[]{null};
         listFromJavabaas(true, new JBAppListCallback() {
@@ -260,6 +309,11 @@ public class JBApp {
         return lists[0];
     }
 
+    /**
+     * 查看所有应用信息 异步
+     *
+     * @param callback 应用信息列表回调
+     */
     public static void listInBackground(JBAppListCallback callback) {
         listFromJavabaas(false, callback);
     }
@@ -284,6 +338,13 @@ public class JBApp {
         });
     }
 
+    /**
+     * 导出应用信息 同步
+     *
+     * @param appId         应用id
+     * @return              应用json信息
+     * @throws JBException  异常信息
+     */
     public static JBAppExport export(String appId) throws JBException {
         final JBAppExport[] lists = {null};
         exportFromJavabaas(true, appId, new JBAppExportCallback() {
@@ -302,6 +363,12 @@ public class JBApp {
         return lists[0];
     }
 
+    /**
+     * 导出应用信息 异步
+     *
+     * @param appId         应用id
+     * @param callback      导出回调信息
+     */
     public static void exportInBackground(String appId, JBAppExportCallback callback) {
         exportFromJavabaas(false, appId, callback);
     }
@@ -331,6 +398,12 @@ public class JBApp {
         });
     }
 
+    /**
+     * 导入应用信息 同步
+     *
+     * @param data          应用json信息
+     * @throws JBException  异常信息
+     */
     public static void importData(String data) throws JBException {
         importDataToJavabaas(true, data, new JBBooleanCallback() {
             @Override
@@ -345,6 +418,12 @@ public class JBApp {
         }
     }
 
+    /**
+     * 导入应用信息 异步
+     *
+     * @param data      应用json信息
+     * @param callback  导入回调信息
+     */
     public static void importDataInBackground(String data, JBBooleanCallback callback) {
         importDataToJavabaas(false, data, callback);
     }
@@ -376,6 +455,18 @@ public class JBApp {
         });
     }
 
+    /**
+     * 查看应用请求统计信息 同步
+     *
+     * @param apiStat       统计选项
+     *                      plat:平台,例如"ios"
+     *                      clazz:类名
+     *                      method:方法名
+     *                      from:统计开始日期,例如"20170101"
+     *                      to:统计结束日期,例如"20170131"
+     * @return              统计信息
+     * @throws JBException  异常信息
+     */
     public static List<Long> getApiStat(JBApiStat apiStat) throws JBException {
         final List<Long>[] result = new List[]{null};
         getApiStatFromJavabaas(true, apiStat, new JBApiStatListCallback() {
@@ -394,6 +485,17 @@ public class JBApp {
         return result[0];
     }
 
+    /**
+     * 查看应用请求统计信息 异步
+     *
+     * @param apiStat       统计选项
+     *                      plat:平台,例如"ios"
+     *                      clazz:类名
+     *                      method:方法名
+     *                      from:统计开始日期,例如"20170101"
+     *                      to:统计结束日期,例如"20170131"
+     * @param callback
+     */
     public static void getApiStatInBackground(JBApiStat apiStat, JBApiStatListCallback callback) {
         getApiStatFromJavabaas(false, apiStat, callback);
     }
@@ -419,6 +521,12 @@ public class JBApp {
         });
     }
 
+    /**
+     * 更细AppConfig信息 同步
+     *
+     * @param config        待更新信息
+     * @throws JBException  异常信息
+     */
     public static void updateAppConfig(JBAppConfig config) throws JBException {
         updateAppConfigToJavabaas(config, true, new JBBooleanCallback() {
             @Override
@@ -433,6 +541,12 @@ public class JBApp {
         }
     }
 
+    /**
+     * 更细AppConfig信息 异步
+     *
+     * @param config        待更新信息
+     * @param callback      更新结果回调
+     */
     public static void updateAppConfigInBackground(JBAppConfig config, JBBooleanCallback callback) {
         updateAppConfigToJavabaas(config, false, callback);
     }
@@ -465,6 +579,13 @@ public class JBApp {
         });
     }
 
+    /**
+     * 查看AppConfig信息 同步
+     *
+     * @param appConfigKey appConfigKey
+     * @return             appConfigKey对应的AppConfig信息
+     * @throws JBException 异常信息
+     */
     public static String getAppConfig(JBAppConfigKey appConfigKey) throws JBException {
         final String[] result = new String[1];
         getAppConfigFromJavaBaas(appConfigKey, true, new JBGetConfigCallback() {
@@ -483,11 +604,17 @@ public class JBApp {
         return result[0];
     }
 
+    /**
+     * 查看AppConfig信息 异步
+     *
+     * @param appConfigKey appConfigKey
+     * @param callback     回调信息
+     */
     public static void getAppConfigInBackground(JBAppConfigKey appConfigKey, JBGetConfigCallback callback) {
         getAppConfigFromJavaBaas(appConfigKey, false, callback);
     }
 
-    private static void getAppConfigFromJavaBaas(final JBAppConfigKey appConfigKey, final boolean sync, JBGetConfigCallback callback) {
+    private static void getAppConfigFromJavaBaas(final JBAppConfigKey appConfigKey, final boolean sync, final JBGetConfigCallback callback) {
         String path = JBHttpClient.getConfigPath("app");
         JBHttpParams params = new JBHttpParams();
         if (appConfigKey != null) {
@@ -802,11 +929,11 @@ public class JBApp {
     }
 
     public static class JBApiStat {
-        private String plat;
-        private String clazz;
-        private JBApiMethod method;
-        private String from;
-        private String to;
+        private String plat;        //平台
+        private String clazz;       //类
+        private JBApiMethod method; //方法
+        private String from;        //开始日期 例如 "20170101"
+        private String to;          //结束日期 例如 "20170131"
 
         public JBApiStat(String plat, String clazz, JBApiMethod method, String from, String to) {
             this.plat = plat;

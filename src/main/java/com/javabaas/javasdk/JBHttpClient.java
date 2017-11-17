@@ -32,14 +32,17 @@ public class JBHttpClient {
         } else {
             wholeUrl = url;
         }
-
+        RequestBody requestBody;
         builder.url(wholeUrl);
-        RequestBody requestBody = null;
         if (body != null) {
             try {
                 requestBody = RequestBody.create(JSON, JBUtils.writeValueAsString(body));
             } catch (JBException e) {
+                handler.onFailure(e);
+                return;
             }
+        } else {
+            requestBody = RequestBody.create(JSON, "{}");
         }
         switch (method) {
             case GET:
@@ -59,7 +62,6 @@ public class JBHttpClient {
                 break;
             default:
         }
-
         httpClient.execute(builder.build(), sync, handler);
     }
 
@@ -149,6 +151,10 @@ public class JBHttpClient {
 
     public static String getObjectPath(String className, String extra) {
         return getPath("object", className + "/" + extra);
+    }
+
+    public static String getInstallationPath() {
+        return getPath("installation", null);
     }
 
     public static String getAdminPath() {

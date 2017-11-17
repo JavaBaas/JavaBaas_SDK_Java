@@ -9,6 +9,12 @@ import java.util.Map;
  * Created by zangyilin on 2017/10/30.
  */
 public class JBStatus {
+    /**
+     * 获取服务当前运行信息 同步
+     *
+     * @return 服务相关信息
+     * @throws JBException 异常信息
+     */
     public static Map<String, Object> getStatus() throws JBException{
         final Map<String, Object>[] map = new Map[]{null};
         getStatusFromJavabaas(true, new JBStatusCallback() {
@@ -27,6 +33,11 @@ public class JBStatus {
         return map[0];
     }
 
+    /**
+     * 获取服务当前运行信息 异步
+     *
+     * @param callback 回调信息
+     */
     public static void getStatusInBackground(JBStatusCallback callback) {
         getStatusFromJavabaas(false, callback);
     }

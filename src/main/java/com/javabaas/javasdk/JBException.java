@@ -8,10 +8,6 @@ public class JBException extends Exception {
     private int code;
     private String message;
 
-//    public static void e(JBCode simpleCode) {
-//        throw new JBException(simpleCode);
-//    }
-
     public JBException(JBCode simpleCode) {
         super(simpleCode.getMessage());
         code = simpleCode.getCode();

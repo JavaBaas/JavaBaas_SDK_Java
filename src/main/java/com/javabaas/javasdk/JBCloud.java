@@ -7,11 +7,19 @@ import java.util.List;
 import java.util.Map;
 
 /**
+ * 云方法相处理
  * Created by zangyilin on 2017/11/10.
  */
 
 public class JBCloud {
 
+    /**
+     * 初始化云方法 同步
+     *
+     * @param setting       云方法信息
+     * @return              初始化成功或失败
+     * @throws JBException  异常信息
+     */
     public static boolean deploy(JBCloudSetting setting) throws JBException {
         deployToJavabaas(setting, true, new JBCloudCallback() {
             @Override
@@ -27,6 +35,12 @@ public class JBCloud {
         return true;
     }
 
+    /**
+     * 初始化云方法 异步
+     *
+     * @param setting       云方法信息
+     * @param callback      成功或失败回调
+     */
     public static void deployInBackground(JBCloudSetting setting, JBCloudCallback callback) {
         deployToJavabaas(setting, false, callback);
     }
@@ -50,6 +64,12 @@ public class JBCloud {
         });
     }
 
+    /**
+     * 删除初始化过云方法的信息  同步
+     *
+     * @return              成功或失败
+     * @throws JBException  异常信息
+     */
     public static boolean delete() throws JBException {
         deleteFromJavabaas(true, new JBCloudCallback() {
             @Override
@@ -65,6 +85,11 @@ public class JBCloud {
         return true;
     }
 
+    /**
+     * 删除初始化过云方法的信息  异步
+     *
+     * @param callback 回调信息
+     */
     public static void deleteInBackground(JBCloudCallback callback) {
         deleteFromJavabaas(false, callback);
     }
@@ -89,6 +114,14 @@ public class JBCloud {
         });
     }
 
+    /**
+     * 调用云方法请求 同步
+     *
+     * @param cloudName     云方法名称
+     * @param body          body信息
+     * @return              云方法返回信息
+     * @throws JBException  异常信息
+     */
     public static Map<String, Object>  cloud(String cloudName, Map<String, Object> body) throws JBException {
         final Map<String, Object>[] result = new Map[]{null};
         cloudFromJavabaas(cloudName, body, true, new JBCloudCallback() {
@@ -107,6 +140,13 @@ public class JBCloud {
         return result[0];
     }
 
+    /**
+     * 调用云方法请求 异步
+     *
+     * @param cloudName     云方法名称
+     * @param body          body信息
+     * @param callback      回调信息
+     */
     public static void cloudInBackground(String cloudName, Map<String, Object> body, JBCloudCallback callback) {
         cloudFromJavabaas(cloudName, body, false, callback);
     }

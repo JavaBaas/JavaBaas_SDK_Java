@@ -6,12 +6,13 @@ import com.javabaas.javasdk.callback.JBObjectCallback;
 import java.util.Map;
 
 /**
+ * 推送相关
  * Created by zangyilin on 2017/11/10.
  */
 public class JBPush {
     // 透传信息，静默推送
     private JBPushMessage message;
-    // 推送信息，可打通知栏
+    // 推送信息，可达通知栏
     private JBPushNotification notification;
 
     public JBPushMessage getMessage() {
@@ -30,7 +31,13 @@ public class JBPush {
         this.notification = notification;
     }
 
-
+    /**
+     * 发送推送/透传信息 同步
+     *
+     * @param query         过滤条件,过滤installationId
+     * @return              成功或失败
+     * @throws JBException  异常信息
+     */
     public boolean sendPush(JBPushQuery query) throws JBException {
         sendPushToJavabaas(query, true, new JBBooleanCallback() {
             @Override
@@ -46,6 +53,12 @@ public class JBPush {
         return true;
     }
 
+    /**
+     * 发送推送/透传信息 异步
+     *
+     * @param query         过滤条件,过滤installationId
+     * @param callback      成功或失败回调信息
+     */
     public void sendPushInBackground(JBPushQuery query, JBBooleanCallback callback) {
         sendPushToJavabaas(query, false, callback);
     }

@@ -1,6 +1,7 @@
 package com.javabaas.javasdk;
 
 /**
+ * 原子操作方式
  * Created by zangyilin on 2017/9/13.
  */
 public enum JBOperatorType {

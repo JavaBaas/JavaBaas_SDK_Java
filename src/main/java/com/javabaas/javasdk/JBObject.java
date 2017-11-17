@@ -22,8 +22,9 @@ public class JBObject {
     ReadWriteLock lock = new ReentrantReadWriteLock();
 
     private volatile boolean fetchWhenSave = false;
+    // 按条件查询或更新对象时候的查询条件
     private JBQuery query;
-
+    // 类名
     @JsonInclude(JsonInclude.Include.NON_NULL)
     protected String className;
     // 文档Id
@@ -86,6 +87,10 @@ public class JBObject {
         this.serverData = serverData;
     }
 
+    /**
+     * 为true时会在保存后返回对象最新值
+     * 如果在创建或更新对象时希望返回对象最新值可以使用本setFetchWhenSave
+     */
     public void setFetchWhenSave(boolean fetchWhenSave) {
         this.fetchWhenSave = fetchWhenSave;
     }
@@ -121,15 +126,11 @@ public class JBObject {
 
     static {
         INVALID_KEYS.add("code");
-        INVALID_KEYS.add("uuid");
         INVALID_KEYS.add("className");
-        INVALID_KEYS.add("keyValues");
         INVALID_KEYS.add("fetchWhenSave");
         INVALID_KEYS.add("running");
         INVALID_KEYS.add("acl");
         INVALID_KEYS.add("ACL");
-        INVALID_KEYS.add("isDataReady");
-        INVALID_KEYS.add("pendingKeys");
         INVALID_KEYS.add(CREATED_AT);
         INVALID_KEYS.add(UPDATED_AT);
         INVALID_KEYS.add(OBJECT_ID);
@@ -154,6 +155,12 @@ public class JBObject {
         className = theClassName;
     }
 
+    /**
+     * 添加字段值
+     *
+     * @param key 字段
+     * @param value 值
+     */
     public void put(final String key, final Object value) {
         try {
             lock.writeLock().lock();
@@ -198,6 +205,11 @@ public class JBObject {
         return JBUtils.dateFromString((String) get(key));
     }
 
+    /**
+     * 原子操作 删除删除字段值
+     *
+     * @param key 待操作的字段
+     */
     public void removeKey(String key) {
         try {
             lock.writeLock().lock();
@@ -212,10 +224,21 @@ public class JBObject {
         }
     }
 
+    /**
+     * 原子操作 Number类型字段值加1
+     *
+     * @param key 待操作的字段
+     */
     public void increment(String key) {
         increment(key, 1);
     }
 
+    /**
+     * 原子操作 Number类型字段值加给的增量值
+     *
+     * @param key 待操作的字段
+     * @param amount 增量值
+     */
     public void increment(final String key, final Number amount) {
         try {
             lock.writeLock().lock();
@@ -232,25 +255,45 @@ public class JBObject {
         }
     }
 
+    /**
+     * 原子操作 Array类型字段添加单个值
+     *
+     * @param key 待操作的字段
+     * @param object 待添加对象
+     */
     public void addArray(String key, Object object) {
         List<Object> list = new ArrayList<>();
         list.add(object);
         addArray(key, list);
     }
 
+    /**
+     * 原子操作 Array类型字段添加list值
+     *
+     * @param key 待操作的字段
+     * @param list 待添加list
+     */
     public void addArray(String key, Collection<?> list) {
         controlObjectToArray(key, list, JBOperatorType.ADD);
     }
 
     /**
+     * 原子操作 Array类型字段添加与之前不重复的值
      * 只能保证不会增加和之前重复的值，不能对之前已经存在的数据去重
-     * @param key 字段
-     * @param list 数组
+     *
+     * @param key 待操作的字段
+     * @param list 待操作数组
      */
     public void addUniqueArray(String key, Collection<?> list) {
         controlObjectToArray(key, list, JBOperatorType.ADDUNIQUE);
     }
 
+    /**
+     * 原子操作 Array类型字段删除值
+     *
+     * @param key 待操作的字段
+     * @param list 待操作数组
+     */
     public void removeArray(String key, Collection<?> list) {
         controlObjectToArray(key, list, JBOperatorType.REMOVE);
     }
@@ -278,6 +321,12 @@ public class JBObject {
         }
     }
 
+    /**
+     * 原子操作 Number类型字段原子倍数增加
+     *
+     * @param key 待操作的字段
+     * @param amount 待增加的倍数值
+     */
     public void multiply(final String key, final Number amount) {
         try {
             lock.writeLock().lock();
@@ -294,11 +343,24 @@ public class JBObject {
         }
     }
 
+    /**
+     * 创建JBObject对象
+     *
+     * @param className 类名
+     * @return JBObject
+     */
     public static JBObject create(String className) {
         return new JBObject(className);
     }
 
-    public static JBObject createWithOutData(String className, String objectId) {
+    /**
+     * 创建一个只含有objectId的引用对象
+     *
+     * @param className 类名
+     * @param objectId 对象id
+     * @return
+     */
+    public static JBObject createWithoutData(String className, String objectId) {
         JBObject jbObject = new JBObject(className);
         if (JBUtils.isEmpty(objectId)) {
             throw new IllegalArgumentException("objectId 为空");
@@ -307,6 +369,12 @@ public class JBObject {
         return jbObject;
     }
 
+    /**
+     * 新建或保存对象 同步
+     * 如果对象中objectId不为空，则视为更新操作，如果objectId为空，则视为新建操作
+     *
+     * @throws JBException 异常
+     */
     public void save() throws JBException {
         saveObjectToJavaBaas(true, new JBBooleanCallback() {
             @Override
@@ -321,10 +389,21 @@ public class JBObject {
         }
     }
 
+    /**
+     * 新建或保存对象 异步 无回调
+     * 如果对象中objectId不为空，则视为更新操作，如果objectId为空，则视为新建操作
+     *
+     */
     public void saveInBackground() {
         saveObjectToJavaBaas(false, null);
     }
 
+    /**
+     * 新建或保存对象 异步 有回调
+     * 如果对象中objectId不为空，则视为更新操作，如果objectId为空，则视为新建操作
+     *
+     * @param callback 操作成功或失败的回调
+     */
     public void saveInBackground(JBBooleanCallback callback) {
         this.saveObjectToJavaBaas(false, callback);
     }
@@ -385,6 +464,11 @@ public class JBObject {
         return body;
     }
 
+    /**
+     * 删除对象 同步
+     *
+     * @throws JBException 异常信息
+     */
     public void delete() throws JBException {
         deleteFromJavabaas(true, new JBBooleanCallback() {
             @Override
@@ -399,10 +483,18 @@ public class JBObject {
         }
     }
 
+    /**
+     * 删除对象 异步 无回调
+     */
     public void deleteInBackground() {
         deleteFromJavabaas(false, null);
     }
 
+    /**
+     * 删除对象 异步 有回调
+     *
+     * @param callback 成功或失败回调
+     */
     public void deleteInBackground(JBBooleanCallback callback) {
         deleteFromJavabaas(false, callback);
     }
