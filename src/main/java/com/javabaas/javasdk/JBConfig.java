@@ -20,7 +20,7 @@ public class JBConfig {
     long adjustTime;
 
     /**
-     * 初始化普通权限
+     * 初始化普通权限<br/>
      * 该方法默认设置plat为"cloud",建议服务端初始化时使用该方法
      *
      * @param remote 服务地址,例如"http://127.0.0.1:8080/api"

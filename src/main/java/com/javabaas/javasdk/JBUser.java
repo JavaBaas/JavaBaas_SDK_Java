@@ -24,7 +24,7 @@ public class JBUser extends JBObject {
     private static JBUser currentUser;
 
     /**
-     * 当前登录的用户
+     * 当前登录的用户<br/>
      * 在安卓设备使用该方法获取当前用户
      *
      * @return 当前用户
@@ -177,7 +177,7 @@ public class JBUser extends JBObject {
     }
 
     /**
-     * 第三方登录注册登录 同步
+     * 第三方登录注册登录 同步<br/>
      * 如果已经注册直接登录,如果没有注册会自动创建一个新的用户
      *
      * @param auth 授权信息
@@ -199,7 +199,7 @@ public class JBUser extends JBObject {
     }
 
     /**
-     * 第三方登录注册登录 异步
+     * 第三方登录注册登录 异步<br/>
      * 如果已经注册直接登录,如果没有注册会自动创建一个新的用户
      *
      * @param auth 授权信息
@@ -356,7 +356,7 @@ public class JBUser extends JBObject {
     }
 
     /**
-     * 第三方登录 同步
+     * 第三方登录 同步<br/>
      * 如果之前没有注册用户,本方法不会创建新用户,返回登录失败信息
      *
      * @param auth 第三方授权信息
@@ -383,7 +383,7 @@ public class JBUser extends JBObject {
     }
 
     /**
-     * 第三方登录 异步
+     * 第三方登录 异步<br/>
      * 如果之前没有注册用户,本方法不会创建新用户,返回登录失败信息
      *
      * @param auth 第三方授权信息
@@ -423,7 +423,7 @@ public class JBUser extends JBObject {
     }
 
     /**
-     * 重置用户sessionToken 同步
+     * 重置用户sessionToken 同步<br/>
      * 用户本人可以reset自己的sessionToken,master权限可以reset所有人的sessionToken.
      *
      * 本方法2.0.1版本暂时取消,以后版本可能会加上
@@ -445,7 +445,7 @@ public class JBUser extends JBObject {
     }
 
     /**
-     * 修改密码 同步
+     * 修改密码 同步<br/>
      * 修改密码会重置用户的sessionToken
      *
      * @param oldPassword 旧密码
@@ -472,7 +472,7 @@ public class JBUser extends JBObject {
     }
 
     /**
-     * 修改密码 异步
+     * 修改密码 异步<br/>
      * 修改密码会重置用户的sessionToken
      *
      * @param oldPassword 旧密码

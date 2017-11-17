@@ -14,7 +14,8 @@ public class JBInstallation {
 
 
     /**
-     * 设备注册，推送使用，设备需要到javabaas上注册 Installation，并将返回的 InstallationId 注册到推送平台的别名中
+     * 设备注册，推送使用<br/>
+     * 设备需要到javabaas上注册 Installation，并将返回的 InstallationId 注册到推送平台的别名中
      *
      * @param deviceType 设备类别 android或ios
      * @param deviceToken 设备deviceToken
@@ -40,7 +41,8 @@ public class JBInstallation {
     }
 
     /**
-     * 设备注册，推送使用，设备需要到javabaas上注册 Installation，并将返回的 InstallationId 注册到推送平台的别名中
+     * 设备注册，推送使用<br/>
+     * 设备需要到javabaas上注册 Installation，并将返回的 InstallationId 注册到推送平台的别名中
      *
      * @param deviceType 设备类别 android或ios
      * @param deviceToken 设备deviceToken

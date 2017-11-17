@@ -158,10 +158,10 @@ public final class JBFile extends JBObject{
     }
 
     /**
-     * 保存文件 异步
-     * 该方法只是保存JBFile对象,如果对象中的url是对应其他网络文件,
-     * 希望拷贝到目的文件储存平台可以使用needFetchFile,设置为tre
-     * 服务端会自动将网络文件下载后保存到目的文件储存
+     * 保存文件 异步<br/>
+     * 该方法只是保存JBFile对象,如果对象中的url是对应其他网络文件,<br/>
+     * 希望拷贝到目的文件储存平台可以使用needFetchFile,设置为tre<br/>
+     * 服务端会自动将网络文件下载后保存到目的文件储存<br/>
      *
      * 需要注意的是,如果needFetchFile设置为true,对应的网络文件大小不能太大.太大可能会失败.
      *

@@ -458,12 +458,12 @@ public class JBApp {
     /**
      * 查看应用请求统计信息 同步
      *
-     * @param apiStat       统计选项
-     *                      plat:平台,例如"ios"
-     *                      clazz:类名
-     *                      method:方法名
-     *                      from:统计开始日期,例如"20170101"
-     *                      to:统计结束日期,例如"20170131"
+     * @param apiStat       统计选项:<br/>
+     *                      plat:平台,例如"ios"<br/>
+     *                      clazz:类名<br/>
+     *                      method:方法名<br/>
+     *                      from:统计开始日期,例如"20170101"<br/>
+     *                      to:统计结束日期,例如"20170131"<br/>
      * @return              统计信息
      * @throws JBException  异常信息
      */
@@ -488,12 +488,12 @@ public class JBApp {
     /**
      * 查看应用请求统计信息 异步
      *
-     * @param apiStat       统计选项
-     *                      plat:平台,例如"ios"
-     *                      clazz:类名
-     *                      method:方法名
-     *                      from:统计开始日期,例如"20170101"
-     *                      to:统计结束日期,例如"20170131"
+     * @param apiStat       统计选项:<br/>
+     *                      plat:平台,例如"ios"<br/>
+     *                      clazz:类名<br/>
+     *                      method:方法名<br/>
+     *                      from:统计开始日期,例如"20170101"<br/>
+     *                      to:统计结束日期,例如"20170131"<br/>
      * @param callback
      */
     public static void getApiStatInBackground(JBApiStat apiStat, JBApiStatListCallback callback) {

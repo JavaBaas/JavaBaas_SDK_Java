@@ -59,7 +59,7 @@ public class JBSms {
     }
 
     /**
-     * 发送短信验证码 同步
+     * 发送短信验证码 同步<br/>
      * 短信验证码的模板id需要提前在JBAppConfig中配置好
      *
      * @param phone        手机号
@@ -87,7 +87,7 @@ public class JBSms {
     }
 
     /**
-     * 发送短信验证码 异步
+     * 发送短信验证码 异步<br/>
      * 短信验证码的模板id需要提前在JBAppConfig中配置好
      *
      * @param phone        手机号

@@ -51,17 +51,18 @@ public class JBQuery<T extends JBObject> {
     }
 
     /**
-     * 添加include的内容
+     * 添加include的内容<br/>
+     * <br/>
      *
-     * 如果查询的字段是Pointer类型,通过设置include可以将Pointer字段的详细信息查询出来.
-     * 例如有个字段为sound,音频,是Pointer类型,对应的class是Sound,则查询该字段的详细信息可以添加"sound"到include中.
-     * 如果Sound还有有个字段为user,是Pointer类型,对应的class是_User,
-     * 则查询sound字段对应的详细信息中的user字段的详细信息,可以添加"sound.user"到include中.
+     * 如果查询的字段是Pointer类型,通过设置include可以将Pointer字段的详细信息查询出来.<br/>
+     * 例如有个字段为sound,音频,是Pointer类型,对应的class是Sound,则查询该字段的详细信息可以添加"sound"到include中.<br/>
+     * 如果Sound还有有个字段为user,是Pointer类型,对应的class是_User,<br/>
+     * 则查询sound字段对应的详细信息中的user字段的详细信息,可以添加"sound.user"到include中.<br/><br/>
      *
-     * pointer字段的层级通过"."来分隔,例如"a.b.c",表示当前查询的主体类中有Pointer字段a,a对应的类中有Pointer字段b,b对应的Pointer字段c
-     * 本次查询需要三个层级的查询,一直把c的详细信息查询出来.
+     * pointer字段的层级通过"."来分隔,例如"a.b.c",表示当前查询的主体类中有Pointer字段a,a对应的类中有Pointer字段b,b对应的Pointer字段c<br/>
+     * 本次查询需要三个层级的查询,一直把c的详细信息查询出来.<br/><br/>
      *
-     * 需要注意的是,系统默认会把"a.b.c"对应的所有层级的信息查询出来,不能只想要a和b的Pointer信息和c的详细信息.
+     * 需要注意的是,系统默认会把"a.b.c"对应的所有层级的信息查询出来,不能只想要a和b的Pointer信息和c的详细信息.<br/>
      * 同时,当你需要查询a,b,c三个层级的信息时,只需要设置一个"a.b.c"到include中即可,不必同时设置{"a","a.b","a.b.c"}
      *
      * @param include
@@ -85,6 +86,7 @@ public class JBQuery<T extends JBObject> {
 
     /**
      * 这个只是针对传递过来json字符串，对于JBQueryConditions的where不适用
+     *
      * @return string
      */
     public String getWhereSting() {
@@ -93,6 +95,7 @@ public class JBQuery<T extends JBObject> {
 
     /**
      * 这个会把其他where条件全部替换
+     *
      * @param whereSting 查询语句
      */
     public void setWhereSting(String whereSting) {
@@ -138,8 +141,8 @@ public class JBQuery<T extends JBObject> {
     }
 
     /**
-     * 设置查询返回文档数据的最大条数
-     * limit取值为1-1000
+     * 设置查询返回文档数据的最大条数<br/>
+     * limit取值为1-1000<br/>
      * 不设置默认为100
      * @param limit limit值
      * @return query
@@ -150,8 +153,8 @@ public class JBQuery<T extends JBObject> {
     }
 
     /**
-     * 设置查询返回文档数据的最大条数
-     * limit取值为1-1000
+     * 设置查询返回文档数据的最大条数<br/>
+     * limit取值为1-1000<br/>
      * 不设置默认为100
      * @param limit limit值
      * @return query
@@ -214,17 +217,17 @@ public class JBQuery<T extends JBObject> {
     }
 
     /**
-     * 添加include的内容
+     * 添加include的内容<br/><br/>
      *
-     * 如果查询的字段是Pointer类型,通过设置include可以将Pointer字段的详细信息查询出来.
-     * 例如有个字段为sound,音频,是Pointer类型,对应的class是Sound,则查询该字段的详细信息可以添加"sound"到include中.
-     * 如果Sound还有有个字段为user,是Pointer类型,对应的class是_User,
-     * 则查询sound字段对应的详细信息中的user字段的详细信息,可以添加"sound.user"到include中.
+     * 如果查询的字段是Pointer类型,通过设置include可以将Pointer字段的详细信息查询出来.<br/>
+     * 例如有个字段为sound,音频,是Pointer类型,对应的class是Sound,则查询该字段的详细信息可以添加"sound"到include中.<br/>
+     * 如果Sound还有有个字段为user,是Pointer类型,对应的class是_User,<br/>
+     * 则查询sound字段对应的详细信息中的user字段的详细信息,可以添加"sound.user"到include中.<br/><br/>
      *
-     * pointer字段的层级通过"."来分隔,例如"a.b.c",表示当前查询的主体类中有Pointer字段a,a对应的类中有Pointer字段b,b对应的Pointer字段c
-     * 本次查询需要三个层级的查询,一直把c的详细信息查询出来.
+     * pointer字段的层级通过"."来分隔,例如"a.b.c",表示当前查询的主体类中有Pointer字段a,a对应的类中有Pointer字段b,b对应的Pointer字段c<br/>
+     * 本次查询需要三个层级的查询,一直把c的详细信息查询出来.<br/><br/>
      *
-     * 需要注意的是,系统默认会把"a.b.c"对应的所有层级的信息查询出来,不能只想要a和b的Pointer信息和c的详细信息.
+     * 需要注意的是,系统默认会把"a.b.c"对应的所有层级的信息查询出来,不能只想要a和b的Pointer信息和c的详细信息.<br/>
      * 同时,当你需要查询a,b,c三个层级的信息时,只需要设置一个"a.b.c"到include中即可,不必分别设置"a","a.b","a.b.c"
      *
      * @param key key值
@@ -236,7 +239,7 @@ public class JBQuery<T extends JBObject> {
     }
 
     /**
-     * 添加正序排序字段
+     * 添加正序排序字段<br/>
      * 不会删除之前设置的排序方式
      *
      * @param key 排序字段
@@ -248,7 +251,7 @@ public class JBQuery<T extends JBObject> {
     }
 
     /**
-     * 添加倒叙排序字段
+     * 添加倒叙排序字段<br/>
      * 不会删除之前设置的排序方式
      *
      * @param key 排序字段
@@ -283,7 +286,7 @@ public class JBQuery<T extends JBObject> {
     }
 
     /**
-     * 设置倒叙排序字段
+     * 设置倒叙排序字段<br/>
      * 会把之前设置的排序方式删除
      *
      * @param key  排序字段
@@ -295,7 +298,7 @@ public class JBQuery<T extends JBObject> {
     }
 
     /**
-     * 查询字段不为空
+     * 查询字段不为空<br/>
      * "$exists":true
      *
      * @param key 待查询字段
@@ -307,7 +310,7 @@ public class JBQuery<T extends JBObject> {
     }
 
     /**
-     * 查询字段为空
+     * 查询字段为空<br/>
      * "$exists":false
      *
      * @param key 待查询字段
@@ -331,7 +334,7 @@ public class JBQuery<T extends JBObject> {
     }
 
     /**
-     * 查询字段值不等于
+     * 查询字段值不等于<br/>
      * "$ne"
      *
      * @param key   待查询字段
@@ -344,7 +347,7 @@ public class JBQuery<T extends JBObject> {
     }
 
     /**
-     * 查询字段值大于等于
+     * 查询字段值大于等于<br/>
      * "$gte"
      *
      * @param key   待查询字段
@@ -357,7 +360,7 @@ public class JBQuery<T extends JBObject> {
     }
 
     /**
-     * 查询字段值大于
+     * 查询字段值大于<br/>
      * "$gt"
      *
      * @param key   待查询字段
@@ -370,7 +373,7 @@ public class JBQuery<T extends JBObject> {
     }
 
     /**
-     * 查询字段值小于
+     * 查询字段值小于<br/>
      * "$lt"
      *
      * @param key   待查询字段
@@ -383,7 +386,7 @@ public class JBQuery<T extends JBObject> {
     }
 
     /**
-     * 查询字段值小于等于
+     * 查询字段值小于等于<br/>
      * "$lte"
      *
      * @param key   待查询字段
@@ -396,7 +399,7 @@ public class JBQuery<T extends JBObject> {
     }
 
     /**
-     * 查询字段值包含某个字符串
+     * 查询字段值包含某个字符串<br/>
      * ".*%s.*"
      *
      * @param key       待查询字段
@@ -409,7 +412,7 @@ public class JBQuery<T extends JBObject> {
     }
 
     /**
-     * 查询字段值在集合中
+     * 查询字段值在集合中<br/>
      * "$in"
      *
      * @param key       待查询字段
@@ -422,7 +425,7 @@ public class JBQuery<T extends JBObject> {
     }
 
     /**
-     * 查询字段值不在集合中
+     * 查询字段值不在集合中<br/>
      * "$nin"
      *
      * @param key       待查询字段
@@ -435,7 +438,7 @@ public class JBQuery<T extends JBObject> {
     }
 
     /**
-     * 查询字段以字符串开始
+     * 查询字段以字符串开始<br/>
      * "^%s.*"
      *
      * @param key     待查询字段
@@ -448,7 +451,7 @@ public class JBQuery<T extends JBObject> {
     }
 
     /**
-     * 查询字段以字符串结束
+     * 查询字段以字符串结束<br/>
      * ".*%s$"
      *
      * @param key     待查询字段
@@ -461,7 +464,7 @@ public class JBQuery<T extends JBObject> {
     }
 
     /**
-     * 查询字段匹配正则
+     * 查询字段匹配正则<br/>
      * "$regex"
      *
      * @param key     待查询字段
@@ -474,8 +477,8 @@ public class JBQuery<T extends JBObject> {
     }
 
     /**
-     * 查询字段匹配正则
-     * "$regex"
+     * 查询字段匹配正则<br/>
+     * "$regex"<br/>
      * "$options"
      *
      * @param key       待查询字段

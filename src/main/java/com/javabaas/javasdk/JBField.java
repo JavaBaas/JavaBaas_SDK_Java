@@ -189,7 +189,7 @@ public class JBField {
     }
 
     /**
-     * 更新字段信息 同步
+     * 更新字段信息 同步<br/>
      * 目前更新字段信息只能更新字段security和required信息
      *
      * @throws JBException 异常信息
@@ -209,7 +209,7 @@ public class JBField {
     }
 
     /**
-     * 更新字段信息 异步
+     * 更新字段信息 异步<br/>
      * 目前更新字段信息只能更新字段security和required信息
      *
      * @param callback

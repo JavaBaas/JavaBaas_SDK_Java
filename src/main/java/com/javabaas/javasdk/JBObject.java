@@ -88,7 +88,7 @@ public class JBObject {
     }
 
     /**
-     * 为true时会在保存后返回对象最新值
+     * 为true时会在保存后返回对象最新值<br/>
      * 如果在创建或更新对象时希望返回对象最新值可以使用本setFetchWhenSave
      */
     public void setFetchWhenSave(boolean fetchWhenSave) {
@@ -278,7 +278,7 @@ public class JBObject {
     }
 
     /**
-     * 原子操作 Array类型字段添加与之前不重复的值
+     * 原子操作 Array类型字段添加与之前不重复的值<br/>
      * 只能保证不会增加和之前重复的值，不能对之前已经存在的数据去重
      *
      * @param key 待操作的字段
@@ -370,7 +370,7 @@ public class JBObject {
     }
 
     /**
-     * 新建或保存对象 同步
+     * 新建或保存对象 同步<br/>
      * 如果对象中objectId不为空，则视为更新操作，如果objectId为空，则视为新建操作
      *
      * @throws JBException 异常
@@ -390,7 +390,7 @@ public class JBObject {
     }
 
     /**
-     * 新建或保存对象 异步 无回调
+     * 新建或保存对象 异步 无回调<br/>
      * 如果对象中objectId不为空，则视为更新操作，如果objectId为空，则视为新建操作
      *
      */
@@ -399,7 +399,7 @@ public class JBObject {
     }
 
     /**
-     * 新建或保存对象 异步 有回调
+     * 新建或保存对象 异步 有回调<br/>
      * 如果对象中objectId不为空，则视为更新操作，如果objectId为空，则视为新建操作
      *
      * @param callback 操作成功或失败的回调
