@@ -53,17 +53,10 @@ public class JBObject {
         this.objectId = objectId;
     }
 
-    public String getUpdatedAt() {
-        return updatedAt;
-    }
-
     public void setUpdatedAt(String updatedAt) {
         this.updatedAt = updatedAt;
     }
 
-    public String getCreatedAt() {
-        return createdAt;
-    }
 
     public void setCreatedAt(String createdAt) {
         this.createdAt = createdAt;
@@ -201,9 +194,61 @@ public class JBObject {
         return true;
     }
 
+    public String getString(String key) {
+        Object object = get(key);
+        if (object instanceof String) {
+            return (String) object;
+        } else {
+            return null;
+        }
+    }
+
+    public int getInt(String key) {
+        Number v = (Number) get(key);
+        if (v != null)
+            return v.intValue();
+        return 0;
+    }
+
+    public long getLong(String key) {
+        Number number = (Number) get(key);
+        if (number != null)
+            return number.longValue();
+        return 0L;
+    }
+
+    public double getDouble(String key) {
+        Number number = (Number) get(key);
+        if (number != null)
+            return number.doubleValue();
+        return 0;
+    }
+
+    public boolean getBoolean(String key) {
+        Boolean b = (Boolean) get(key);
+        return b == null ? false : b;
+    }
+
     public Date getDate(String key) {
         return JBUtils.dateFromString((String) get(key));
     }
+
+    public Date getCreatedAt() {
+        return JBUtils.dateFromString(createdAt);
+    }
+
+    public Date getUpdatedAt() {
+        return JBUtils.dateFromString(updatedAt);
+    }
+
+    public List getList(String key) {
+        return (List) get(key);
+    }
+
+    public <V> Map<String, V> getMap(String key) {
+        return (Map<String, V>) this.get(key);
+    }
+
 
     /**
      * 原子操作 删除删除字段值

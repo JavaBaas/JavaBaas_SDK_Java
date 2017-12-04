@@ -1,10 +1,13 @@
 package com.javabaas.javasdk;
 
+import com.javabaas.javasdk.annotation.JBCloudAnnotation;
+import com.javabaas.javasdk.annotation.JBHookAnnotation;
 import com.javabaas.javasdk.callback.JBCloudCallback;
 import com.javabaas.javasdk.callback.JBObjectCallback;
 
-import java.util.List;
-import java.util.Map;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.util.*;
 
 /**
  * 云方法相处理
@@ -14,13 +17,117 @@ import java.util.Map;
 public class JBCloud {
 
     /**
+     * 初始化云方法（注解方式） 同步
+     *
+     * @param callbackUrl   云方法地址
+     * @return              初始化成功或失败
+     * @throws JBException  异常信息
+     */
+    public static boolean deploy(String callbackUrl) throws JBException {
+        JBApp.CloudSetting cloudSetting = getCloudSetting(callbackUrl);
+        deployToJavabaas(cloudSetting, true, new JBCloudCallback() {
+            @Override
+            public void done(boolean success, Map<String, Object> data, JBException e) {
+                if (!success) {
+                    JBExceptionHolder.add(e);
+                }
+            }
+        });
+        if (JBExceptionHolder.exists()) {
+            throw JBExceptionHolder.remove();
+        }
+        return true;
+    }
+
+    /**
+     * 初始化云方法（注解方式） 异步
+     *
+     * @param callbackUrl   云方法地址
+     * @param callback      成功或失败回调
+     */
+    public static void deployInBackground(String callbackUrl, JBCloudCallback callback) {
+        JBApp.CloudSetting cloudSetting = getCloudSetting(callbackUrl);
+        deployToJavabaas(cloudSetting, false, callback);
+    }
+
+    private static JBApp.CloudSetting getCloudSetting(String remote) {
+        JBApp.CloudSetting cloudSetting = new JBApp.CloudSetting();
+        cloudSetting.setCustomerHost(remote);
+        List<String> clouds = new ArrayList<>();
+        Map<String, JBApp.HookSetting> hook = new HashMap<>();
+        try {
+            Field field = ClassLoader.class.getDeclaredField("classes");
+            field.setAccessible(true);
+            Vector<Class> vector = (Vector<Class>) field.get(ClassLoader.getSystemClassLoader());
+            List<Class> classes = new ArrayList<>(vector);
+            for (Class clazz : classes) {
+                try {
+                    Method[] methods = clazz.getDeclaredMethods();
+                    for (Method method : methods) {
+                        if (method.getAnnotation(JBCloudAnnotation.class) != null) {
+                            JBCloudAnnotation annotation = method.getAnnotation(JBCloudAnnotation.class);
+                            clouds.add(annotation.value());
+                        }
+                        if (method.getAnnotation(JBHookAnnotation.class) != null) {
+                            JBHookAnnotation annotation = method.getAnnotation(JBHookAnnotation.class);
+                            JBApp.HookSetting hookSetting;
+                            if (hook.get(annotation.className()) != null) {
+                                hookSetting = hook.get(annotation.className());
+                            } else {
+                                hookSetting = new JBApp.HookSetting();
+                            }
+                            JBApp.HookSettingType[] types = annotation.hook();
+                            updateHookSetting(hookSetting, types);
+                            hook.put(annotation.className(), hookSetting);
+                        }
+                    }
+                } catch (NoClassDefFoundError e) {
+                }
+            }
+            cloudSetting.setCloudFunctions(clouds);
+            cloudSetting.setHookSettings(hook);
+        } catch (IllegalAccessException e) {
+        } catch (NoSuchFieldException e) {
+        }
+        return cloudSetting;
+    }
+
+    private static void updateHookSetting(JBApp.HookSetting hookSetting, JBApp.HookSettingType[] types) {
+        if (hookSetting == null) {
+            hookSetting = new JBApp.HookSetting();
+        }
+        for (JBApp.HookSettingType type : types) {
+            switch (type) {
+                case BEFOREINSERT:
+                    hookSetting.setBeforeInsert(true);
+                    break;
+                case BEFOREUPDATE:
+                    hookSetting.setBeforeUpdate(true);
+                    break;
+                case BEFOREDELETE:
+                    hookSetting.setBeforeDelete(true);
+                    break;
+                case AFTERINSERT:
+                    hookSetting.setAfterInsert(true);
+                    break;
+                case AFTERUPDATE:
+                    hookSetting.setAfterUpdate(true);
+                    break;
+                case AFTERDELETE:
+                    hookSetting.setAfterDelete(true);
+                    break;
+            }
+        }
+    }
+
+    /**
      * 初始化云方法 同步
      *
      * @param setting       云方法信息
      * @return              初始化成功或失败
      * @throws JBException  异常信息
      */
-    public static boolean deploy(JBCloudSetting setting) throws JBException {
+    public static boolean deploy(JBApp.CloudSetting setting) throws JBException {
         deployToJavabaas(setting, true, new JBCloudCallback() {
             @Override
             public void done(boolean success, Map<String, Object> data, JBException e) {
@@ -41,11 +148,11 @@ public class JBCloud {
      * @param setting       云方法信息
      * @param callback      成功或失败回调
      */
-    public static void deployInBackground(JBCloudSetting setting, JBCloudCallback callback) {
+    public static void deployInBackground(JBApp.CloudSetting setting, JBCloudCallback callback) {
         deployToJavabaas(setting, false, callback);
     }
 
-    private static void deployToJavabaas(final JBCloudSetting setting, final boolean sync, final JBCloudCallback callback) {
+    private static void deployToJavabaas(final JBApp.CloudSetting setting, final boolean sync, final JBCloudCallback callback) {
         String path = JBHttpClient.getCloudDeployPath();
         JBHttpClient.INSTANCE().sendRequest(path, JBHttpMethod.POST, null, setting, true, new JBObjectCallback() {
             @Override
@@ -169,133 +276,6 @@ public class JBCloud {
                 }
             }
         });
-    }
-
-    public static class JBCloudSetting {
-        private String customerHost;
-        private List<String> cloudFunctions;
-        private Map<String, HookSetting> hookSettings;
-
-        public String getCustomerHost() {
-            return customerHost;
-        }
-
-        public void setCustomerHost(String customerHost) {
-            this.customerHost = customerHost;
-        }
-
-        public List<String> getCloudFunctions() {
-            return cloudFunctions;
-        }
-
-        public void setCloudFunctions(List<String> cloudFunctions) {
-            this.cloudFunctions = cloudFunctions;
-        }
-
-        public Map<String, HookSetting> getHookSettings() {
-            return hookSettings;
-        }
-
-        public void setHookSettings(Map<String, HookSetting> hookSettings) {
-            this.hookSettings = hookSettings;
-        }
-
-        public HookSetting getHookSetting(String name) {
-            return hookSettings == null ? null : hookSettings.get(name);
-        }
-
-        public boolean hasFunction(String name) {
-            if (cloudFunctions == null) {
-                return false;
-            } else {
-                for (String function : cloudFunctions) {
-                    if (function.equals(name)) {
-                        return true;
-                    }
-                }
-                return false;
-            }
-        }
-    }
-
-    public static class HookSetting {
-
-        private boolean beforeInsert;
-        private boolean afterInsert;
-        private boolean beforeUpdate;
-        private boolean afterUpdate;
-        private boolean beforeDelete;
-        private boolean afterDelete;
-
-        public HookSetting() {
-        }
-
-        public HookSetting(boolean enable) {
-            this.beforeInsert = enable;
-            this.afterInsert = enable;
-            this.beforeUpdate = enable;
-            this.afterUpdate = enable;
-            this.beforeDelete = enable;
-            this.afterDelete = enable;
-        }
-
-        public HookSetting(boolean beforeInsert, boolean afterInsert, boolean beforeUpdate, boolean afterUpdate, boolean beforeDelete,
-                           boolean afterDelete) {
-            this.beforeInsert = beforeInsert;
-            this.afterInsert = afterInsert;
-            this.beforeUpdate = beforeUpdate;
-            this.afterUpdate = afterUpdate;
-            this.beforeDelete = beforeDelete;
-            this.afterDelete = afterDelete;
-        }
-
-        public boolean isBeforeInsert() {
-            return beforeInsert;
-        }
-
-        public void setBeforeInsert(boolean beforeInsert) {
-            this.beforeInsert = beforeInsert;
-        }
-
-        public boolean isAfterInsert() {
-            return afterInsert;
-        }
-
-        public void setAfterInsert(boolean afterInsert) {
-            this.afterInsert = afterInsert;
-        }
-
-        public boolean isBeforeUpdate() {
-            return beforeUpdate;
-        }
-
-        public void setBeforeUpdate(boolean beforeUpdate) {
-            this.beforeUpdate = beforeUpdate;
-        }
-
-        public boolean isAfterUpdate() {
-            return afterUpdate;
-        }
-
-        public void setAfterUpdate(boolean afterUpdate) {
-            this.afterUpdate = afterUpdate;
-        }
-
-        public boolean isBeforeDelete() {
-            return beforeDelete;
-        }
-
-        public void setBeforeDelete(boolean beforeDelete) {
-            this.beforeDelete = beforeDelete;
-        }
-
-        public boolean isAfterDelete() {
-            return afterDelete;
-        }
-
-        public void setAfterDelete(boolean afterDelete) {
-            this.afterDelete = afterDelete;
-        }
     }
 
 }

@@ -1004,6 +1004,15 @@ public class JBApp {
         }
     }
 
+    public enum HookSettingType {
+        BEFOREINSERT,
+        AFTERINSERT,
+        BEFOREUPDATE,
+        AFTERUPDATE,
+        BEFOREDELETE,
+        AFTERDELETE;
+    }
+
     public enum JBAppConfigKey {
         // 短信相关
         SMS_TRY_LIMIT("baas.sms.tryLimit", "短信_重试次数", "5"),
