@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.javabaas.javasdk.log.JBLogUtil;
 import okhttp3.internal.http2.Header;
 
 import java.io.IOException;
@@ -37,7 +36,6 @@ public class JBUtils {
         try {
             return new String(bytes, "UTF-8");
         } catch (Exception e) {
-            // e.printStackTrace();
         }
         return null;
     }
@@ -233,7 +231,6 @@ public class JBUtils {
             objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
             return objectMapper.readValue(content, valueType);
         } catch (IOException e) {
-            JBLogUtil.log.w("数据处理错误");
             throw new JBException(JBCode.INTERNAL_JSON_ERROR);
         }
     }
@@ -245,7 +242,6 @@ public class JBUtils {
                 objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
                 return objectMapper.writeValueAsString(value);
             } catch (JsonProcessingException e) {
-                JBLogUtil.log.w("数据处理错误");
                 throw new JBException(JBCode.INTERNAL_JSON_ERROR);
             }
         } else {

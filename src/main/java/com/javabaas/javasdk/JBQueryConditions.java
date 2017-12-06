@@ -19,13 +19,14 @@ public class JBQueryConditions {
     private Set<String> selectedKeys;
     private int limit;
     private int skip = -1;
-    private String order;
+    private LinkedHashMap<String, Integer> order;
     private Map<String, String> parameters;
 
     public JBQueryConditions() {
         where = new HashMap<>();
         include = new LinkedList<>();
         parameters = new HashMap<>();
+        order = new LinkedHashMap<>();
     }
 
     public int getLimit() {
@@ -44,11 +45,11 @@ public class JBQueryConditions {
         this.skip = skip;
     }
 
-    public String getOrder() {
+    public LinkedHashMap<String, Integer> getOrder() {
         return order;
     }
 
-    public void setOrder(String order) {
+    public void setOrder(LinkedHashMap<String, Integer> order) {
         this.order = order;
     }
 
@@ -85,27 +86,23 @@ public class JBQueryConditions {
     }
 
     public void addAscendingOrder(String key) {
-        if (JBUtils.isEmpty(order)) {
-            this.orderByAscending(key);
-        } else {
-            order = String.format("%s,%s", order, key);
-        }
+        order.remove(key);
+        order.put(key, 1);
     }
 
     public void orderByAscending(String key) {
-        order = String.format("%s", key);
+        order = new LinkedHashMap<>();
+        order.put(key, 1);
     }
 
     public void addDescendingOrder(String key) {
-        if (JBUtils.isEmpty(key)) {
-            this.orderByDescending(key);
-        } else {
-            order = String.format("%s, -%s", order, key);
-        }
+        order.remove(key);
+        order.put(key, -1);
     }
 
     public void orderByDescending(String key) {
-        order = String.format("-%s", key);
+        order = new LinkedHashMap<>();
+        order.put(key, -1);
     }
 
     public void include(String key) {
@@ -196,8 +193,11 @@ public class JBQueryConditions {
         if (skip > 0) {
             parameters.put(SKIP, String.valueOf(skip));
         }
-        if (!JBUtils.isEmpty(order)) {
-            parameters.put(ORDER, order);
+        if (order.size() > 0) {
+            try {
+                parameters.put(ORDER, JBUtils.writeValueAsString(order));
+            } catch (JBException e) {
+            }
         }
         if (include != null && include.size() > 0) {
             parameters.put(INCLUDE, join(include, ","));

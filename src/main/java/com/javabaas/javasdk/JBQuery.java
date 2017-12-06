@@ -190,7 +190,7 @@ public class JBQuery<T extends JBObject> {
         return this;
     }
 
-    public String getOrder() {
+    public LinkedHashMap<String, Integer> getOrder() {
         return conditions.getOrder();
     }
 
@@ -200,7 +200,7 @@ public class JBQuery<T extends JBObject> {
      * @param order 排序方式
      * @return query
      */
-    public JBQuery<T> setOrder(String order) {
+    public JBQuery<T> setOrder(LinkedHashMap<String, Integer> order) {
         conditions.setOrder(order);
         return this;
     }
@@ -211,7 +211,7 @@ public class JBQuery<T extends JBObject> {
      * @param order 排序方式
      * @return query
      */
-    public JBQuery<T> order(String order) {
+    public JBQuery<T> order(LinkedHashMap<String, Integer> order) {
         setOrder(order);
         return this;
     }

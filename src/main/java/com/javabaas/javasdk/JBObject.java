@@ -3,7 +3,6 @@ package com.javabaas.javasdk;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.javabaas.javasdk.callback.JBBooleanCallback;
 import com.javabaas.javasdk.callback.JBObjectCallback;
-import com.javabaas.javasdk.log.JBLogUtil;
 
 import java.util.*;
 import java.util.concurrent.locks.ReadWriteLock;
@@ -100,7 +99,6 @@ public class JBObject {
             lock.readLock().lock();
             value = serverData.get(key);
         } catch (Exception e) {
-            JBLogUtil.log.e("获取失败", e);
         } finally {
             lock.readLock().unlock();
         }
@@ -162,7 +160,6 @@ public class JBObject {
                 updateSaveData(key, value);
             }
         } catch (Exception e) {
-            JBLogUtil.log.w("数据处理错误");
         } finally {
             lock.writeLock().unlock();
         }
@@ -263,7 +260,6 @@ public class JBObject {
             }
             operationQueue.put(key, new JBOperator(JBOperatorType.DELETE));
         } catch (Exception e) {
-            JBLogUtil.log.w("数据处理错误");
         } finally {
             lock.writeLock().unlock();
         }
@@ -294,7 +290,6 @@ public class JBObject {
             operator.setAmount(amount.longValue());
             operationQueue.put(key, operator);
         } catch (Exception e) {
-            JBLogUtil.log.w("数据处理错误");
         } finally {
             lock.writeLock().unlock();
         }
@@ -360,7 +355,6 @@ public class JBObject {
             operator.setObjects(list);
             operationQueue.put(key, operator);
         } catch (Exception e) {
-            JBLogUtil.log.w("数据处理错误");
         } finally {
             lock.writeLock().unlock();
         }
@@ -382,7 +376,6 @@ public class JBObject {
             operator.setAmount(amount.longValue());
             operationQueue.put(key, operator);
         } catch (Exception e) {
-            JBLogUtil.log.w("数据处理错误");
         } finally {
             lock.writeLock().unlock();
         }

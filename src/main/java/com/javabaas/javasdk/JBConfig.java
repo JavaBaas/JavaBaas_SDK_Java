@@ -1,7 +1,6 @@
 package com.javabaas.javasdk;
 
 import com.javabaas.javasdk.callback.JBStatusCallback;
-import com.javabaas.javasdk.log.JBLogger;
 
 import java.util.Date;
 import java.util.Map;
@@ -78,10 +77,6 @@ public class JBConfig {
             JBConfig.getInstance().initConfig(null, app.getId(), app.getKey(), app.getMasterKey(), null, "cloud");
             JBConfig.getInstance().updateAdjustTime();
         }
-    }
-
-    public static void setDebugLogEnabled(boolean enable) {
-        JBLogger.instance().setDebugEnabled(enable);
     }
 
     public void removeAppConfig() {
