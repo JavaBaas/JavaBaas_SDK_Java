@@ -1,11 +1,11 @@
 package com.javabaas.javasdk;
 
+import com.javabaas.javasdk.annotation.JBAnnotationScanner;
 import com.javabaas.javasdk.annotation.JBCloudAnnotation;
 import com.javabaas.javasdk.annotation.JBHookAnnotation;
 import com.javabaas.javasdk.callback.JBCloudCallback;
 import com.javabaas.javasdk.callback.JBObjectCallback;
 
-import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.*;
 
@@ -50,45 +50,44 @@ public class JBCloud {
         deployToJavabaas(cloudSetting, false, callback);
     }
 
+    /**
+     * 恩，这个也只是临时处理，有时间重新改造
+     *
+     * @param remote 回调地址
+     * @return
+     */
     private static JBApp.CloudSetting getCloudSetting(String remote) {
         JBApp.CloudSetting cloudSetting = new JBApp.CloudSetting();
         cloudSetting.setCustomerHost(remote);
         List<String> clouds = new ArrayList<>();
         Map<String, JBApp.HookSetting> hook = new HashMap<>();
-        try {
-            Field field = ClassLoader.class.getDeclaredField("classes");
-            field.setAccessible(true);
-            Vector<Class> vector = (Vector<Class>) field.get(ClassLoader.getSystemClassLoader());
-            List<Class> classes = new ArrayList<>(vector);
-            for (Class clazz : classes) {
-                try {
-                    Method[] methods = clazz.getDeclaredMethods();
-                    for (Method method : methods) {
-                        if (method.getAnnotation(JBCloudAnnotation.class) != null) {
-                            JBCloudAnnotation annotation = method.getAnnotation(JBCloudAnnotation.class);
-                            clouds.add(annotation.value());
-                        }
-                        if (method.getAnnotation(JBHookAnnotation.class) != null) {
-                            JBHookAnnotation annotation = method.getAnnotation(JBHookAnnotation.class);
-                            JBApp.HookSetting hookSetting;
-                            if (hook.get(annotation.className()) != null) {
-                                hookSetting = hook.get(annotation.className());
-                            } else {
-                                hookSetting = new JBApp.HookSetting();
-                            }
-                            JBApp.HookSettingType[] types = annotation.hook();
-                            updateHookSetting(hookSetting, types);
-                            hook.put(annotation.className(), hookSetting);
-                        }
+        Set<Class> classes = JBAnnotationScanner.classSet;
+        if (classes == null) {
+            classes = new HashSet<>();
+        }
+        for (Class clazz : classes) {
+            Method[] methods = clazz.getDeclaredMethods();
+            for (Method method : methods) {
+                if (method.getAnnotation(JBCloudAnnotation.class) != null) {
+                    JBCloudAnnotation annotation = method.getAnnotation(JBCloudAnnotation.class);
+                    clouds.add(annotation.value());
+                }
+                if (method.getAnnotation(JBHookAnnotation.class) != null) {
+                    JBHookAnnotation annotation = method.getAnnotation(JBHookAnnotation.class);
+                    JBApp.HookSetting hookSetting;
+                    if (hook.get(annotation.className()) != null) {
+                        hookSetting = hook.get(annotation.className());
+                    } else {
+                        hookSetting = new JBApp.HookSetting();
                     }
-                } catch (NoClassDefFoundError e) {
+                    JBApp.HookSettingType[] types = annotation.hook();
+                    updateHookSetting(hookSetting, types);
+                    hook.put(annotation.className(), hookSetting);
                 }
             }
-            cloudSetting.setCloudFunctions(clouds);
-            cloudSetting.setHookSettings(hook);
-        } catch (IllegalAccessException e) {
-        } catch (NoSuchFieldException e) {
         }
+        cloudSetting.setCloudFunctions(clouds);
+        cloudSetting.setHookSettings(hook);
         return cloudSetting;
     }
 
@@ -165,7 +164,7 @@ public class JBCloud {
             @Override
             public void onFailure(JBException error) {
                 if (callback != null) {
-                    callback.done(false, null, null);
+                    callback.done(false, null, error);
                 }
             }
         });

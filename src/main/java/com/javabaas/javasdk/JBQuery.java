@@ -733,9 +733,9 @@ public class JBQuery<T extends JBObject> {
     /**
      * 批量删除 同步
      *
-     * @throws Exception 异常信息
+     * @throws JBException 异常信息
      */
-    public void deleteByQuery() throws Exception {
+    public void deleteByQuery() throws JBException {
         deleteByQueryFromJavabaas(true, new JBBooleanCallback() {
             @Override
             public void done(boolean success, JBException e) {
