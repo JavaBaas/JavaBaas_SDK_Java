@@ -228,9 +228,9 @@ public class JBCloud {
      * @return              云方法返回信息
      * @throws JBException  异常信息
      */
-    public static Map<String, Object>  cloud(String cloudName, Map<String, Object> body) throws JBException {
+    public static Map<String, Object>  cloud(String cloudName, Map<String, Object> params, Map<String, Object> body) throws JBException {
         final Map<String, Object>[] result = new Map[]{null};
-        cloudFromJavabaas(cloudName, body, true, new JBCloudCallback() {
+        cloudFromJavabaas(cloudName, params, body, true, new JBCloudCallback() {
             @Override
             public void done(boolean success, Map<String, Object> data, JBException e) {
                 if (success) {
@@ -253,13 +253,14 @@ public class JBCloud {
      * @param body          body信息
      * @param callback      回调信息
      */
-    public static void cloudInBackground(String cloudName, Map<String, Object> body, JBCloudCallback callback) {
-        cloudFromJavabaas(cloudName, body, false, callback);
+    public static void cloudInBackground(String cloudName, Map<String, Object> params, Map<String, Object> body, JBCloudCallback callback) {
+        cloudFromJavabaas(cloudName, params, body, false, callback);
     }
 
-    private static void cloudFromJavabaas(final String cloudName, final Map<String, Object> body, final boolean sync, final JBCloudCallback callback) {
-        String path = JBHttpClient.getConfigPath(cloudName);
-        JBHttpClient.INSTANCE().sendRequest(path, JBHttpMethod.POST, null, body, sync, new JBObjectCallback() {
+    private static void cloudFromJavabaas(final String cloudName, final Map<String, Object> params, final Map<String, Object> body, final boolean sync, final JBCloudCallback callback) {
+        String path = JBHttpClient.getCloudPath(cloudName);
+        JBHttpParams jbHttpParams = new JBHttpParams(params);
+        JBHttpClient.INSTANCE().sendRequest(path, JBHttpMethod.POST, jbHttpParams, body, sync, new JBObjectCallback() {
             @Override
             public void onSuccess(JBResult result) {
                 if (callback == null) {

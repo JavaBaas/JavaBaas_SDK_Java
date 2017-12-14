@@ -23,10 +23,10 @@ public class JBHttpParams {
         params = new HashMap<>();
     }
 
-    public JBHttpParams(Map<String, String> params) {
+    public JBHttpParams(Map<String, ?> params) {
         this();
         if (params != null) {
-            for (Map.Entry<String, String> entry : params.entrySet()) {
+            for (Map.Entry<String, ?> entry : params.entrySet()) {
                 put(entry.getKey(), entry.getValue());
             }
         }
