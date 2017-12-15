@@ -66,6 +66,20 @@ public class JBConfig {
     }
 
     /**
+     * 设置请求超时时间，建议不要随便用
+     *
+     * @param connectTimeout 链接超时 单位秒 默认10秒
+     * @param writeTimeout   读超时   单位秒 默认10秒
+     * @param readTimeout    写超时   单位秒 默认10秒
+     */
+    public static void initHttpTimeout(long connectTimeout, long writeTimeout, long readTimeout) {
+        connectTimeout = connectTimeout <= 0 ? 10 : connectTimeout;
+        writeTimeout = writeTimeout <= 0 ? 10 : writeTimeout;
+        readTimeout = readTimeout <= 0 ? 10 : readTimeout;
+        JBHttpClient.setTimeout(connectTimeout, writeTimeout, readTimeout);
+    }
+
+    /**
      * 切换应用
      *
      * @param app 应用信息

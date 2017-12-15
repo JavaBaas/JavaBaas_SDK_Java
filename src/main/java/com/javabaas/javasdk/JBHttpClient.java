@@ -7,6 +7,7 @@ import okhttp3.*;
 import java.io.IOException;
 import java.util.Date;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created by zangyilin on 2017/8/11.
@@ -79,6 +80,14 @@ public class JBHttpClient {
 
     public JBHttpClient() {
         client = new OkHttpClient();
+    }
+
+    public static void setTimeout(long connectTimeout, long writeTimeout, long readTimeout) {
+        JBHttpClient.INSTANCE().client = new OkHttpClient().newBuilder()
+                .connectTimeout(connectTimeout, TimeUnit.SECONDS)
+                .writeTimeout(writeTimeout, TimeUnit.SECONDS)
+                .readTimeout(readTimeout, TimeUnit.SECONDS)
+                .build();
     }
 
     public void execute(Request request, boolean sync, final JBHttpResponseHandler handler) {
@@ -234,6 +243,7 @@ public class JBHttpClient {
     public static String getStatusPath() {
         return JBConfig.getInstance().remote;
     }
+
 
 
 }

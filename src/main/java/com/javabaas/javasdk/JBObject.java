@@ -226,6 +226,10 @@ public class JBObject {
         return b == null ? false : b;
     }
 
+    public <T extends JBObject> T getJBObject(String key) {
+        return (T) get(key);
+    }
+
     public Date getDate(String key) {
         return JBUtils.dateFromString((String) get(key));
     }
@@ -447,12 +451,14 @@ public class JBObject {
     }
 
     private void saveObjectToJavaBaas(final boolean sync, final JBBooleanCallback callback) {
-        String urlPath = JBHttpClient.getObjectPath(this.className, this.objectId);
+        String urlPath;
         JBHttpMethod method;
         if (!JBUtils.isEmpty(this.objectId)) {
             method = JBHttpMethod.PUT;
+            urlPath = JBHttpClient.getObjectPath(this.className, this.objectId);
         } else {
             method = JBHttpMethod.POST;
+            urlPath = JBHttpClient.getObjectPath(this.className);
         }
         JBHttpParams jbHttpParams = new JBHttpParams();
         jbHttpParams.put("fetch", this.fetchWhenSave);

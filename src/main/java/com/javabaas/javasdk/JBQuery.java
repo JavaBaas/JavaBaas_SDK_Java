@@ -604,7 +604,7 @@ public class JBQuery<T extends JBObject> {
                     T o = list.get(0);
                     callback.done(true, o, null);
                 } else {
-                    callback.done(false, null, new JBException(JBCode.INTERNAL_JSON_ERROR));
+                    callback.done(false, null, new JBException(JBCode.OBJECT_NOT_EXIST));
                 }
             }
 
@@ -793,8 +793,12 @@ public class JBQuery<T extends JBObject> {
         List<Map<String, Object>> list;
         Object o = map.get("result");
         if (o instanceof Map) {
+            Map<String, Object> om = (Map<String, Object>) o;
+            if (om.size() == 0) {
+                return Collections.emptyList();
+            }
             list = new ArrayList<>();
-            list.add((Map<String, Object>) o);
+            list.add(om);
         } else if (o instanceof Collection) {
             list = (List) map.get("result");
         } else {
