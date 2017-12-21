@@ -653,8 +653,8 @@ public class JBQuery<T extends JBObject> {
 
     private void findFromJavaBaas(final boolean sync, final JBFindCallBack callback) {
         assembleParameters();
-        String path = JBHttpClient.getObjectPath(this.className);
-        JBHttpClient.INSTANCE().sendRequest(path, JBHttpMethod.GET, new JBHttpParams(getParameters()), null, sync, new JBObjectCallback() {
+        String path = JBHttpClient.getObjectPath(this.className + "/find");
+        JBHttpClient.INSTANCE().sendRequest(path, JBHttpMethod.POST, null, getParameters(), sync, new JBObjectCallback() {
             @Override
             public void onSuccess(JBResult result) {
                 List<T> list = processResults(result.getData());

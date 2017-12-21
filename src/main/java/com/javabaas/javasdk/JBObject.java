@@ -147,6 +147,23 @@ public class JBObject {
     }
 
     /**
+     * 只复制data
+     *
+     * @param object
+     */
+    public JBObject(JBObject object) {
+        this(object.getClassName());
+        this.objectId = object.getObjectId();
+        if (object.getCreatedAt() != null) {
+            this.createdAt = String.valueOf(object.getCreatedAt().getTime());
+        }
+        if (object.getUpdatedAt() != null) {
+            this.updatedAt = String.valueOf(object.getUpdatedAt().getTime());
+        }
+        JBUtils.copyPropertiesFromMapToJBObject(this, object.getServerData());
+    }
+
+    /**
      * 添加字段值
      *
      * @param key 字段
