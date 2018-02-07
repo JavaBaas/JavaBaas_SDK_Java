@@ -130,7 +130,7 @@ public class JBConfig {
     }
 
     private void updateAdjustTime() {
-        long timestamp = new Date().getTime();
+        final long timestamp = new Date().getTime();
 
         JBStatus.getStatusInBackground(new JBStatusCallback() {
             @Override

@@ -31,7 +31,7 @@ public class JBAnnotationScanner implements BeanPostProcessor {
         final AtomicBoolean add = new AtomicBoolean();
         ReflectionUtils.doWithMethods(o.getClass(), new ReflectionUtils.MethodCallback() {
             @Override
-            public void doWith(Method method) throws IllegalArgumentException, IllegalAccessException {
+            public void doWith(Method method) throws IllegalArgumentException {
                 add.set(true);
             }
         }, new ReflectionUtils.MethodFilter() {

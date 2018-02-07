@@ -72,7 +72,7 @@ public class JBAcl {
     }
 
     public void setPublicReadAccess(boolean allowed) {
-        allowWrite(allowed, publicTag);
+        allowRead(allowed, publicTag);
     }
 
     public void setPublicWriteAccess(boolean allowed) {
