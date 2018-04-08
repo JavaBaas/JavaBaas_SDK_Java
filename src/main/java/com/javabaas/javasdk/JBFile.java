@@ -1,5 +1,6 @@
 package com.javabaas.javasdk;
 
+import com.javabaas.javasdk.callback.JBFileProcessCallback;
 import com.javabaas.javasdk.callback.JBFileSaveCallback;
 import com.javabaas.javasdk.callback.JBFileTokenCallback;
 import com.javabaas.javasdk.callback.JBObjectCallback;
@@ -187,6 +188,58 @@ public final class JBFile extends JBObject{
         }
         Map<String, Object> body = getObjectForSaveBody();
         JBHttpClient.INSTANCE().sendRequest(path, JBHttpMethod.POST, params, body, sync, new JBObjectCallback() {
+            @Override
+            public void onSuccess(JBResult result) {
+                if (callback != null) {
+                    Map<String, Object> data = result.getData();
+                    callback.done(true, fileFromMap((Map<String, Object>) data.get("file")), null);
+                }
+            }
+
+            @Override
+            public void onFailure(JBException error) {
+                if (callback != null) {
+                    callback.done(false, null, error);
+                }
+            }
+        });
+    }
+
+    public static JBFile process(String fileId, String platform, String policy) throws JBException {
+        final JBFile[] result = {null};
+        processFileWithJavabaas(fileId, platform, policy, true, new JBFileProcessCallback() {
+            @Override
+            public void done(boolean success, JBFile file, JBException e) {
+                if (success) {
+                    result[0] = file;
+                } else {
+                    JBExceptionHolder.add(e);
+                }
+            }
+        });
+        if (JBExceptionHolder.exists()) {
+            throw JBExceptionHolder.remove();
+        }
+        return result[0];
+    }
+
+    public static void processInBackground(String fileId, String platform, String policy, JBFileProcessCallback callback) {
+        processFileWithJavabaas(fileId, platform, policy, false, callback);
+    }
+
+    private static void processFileWithJavabaas(final String fileId, final String platform, final String policy, final boolean sync, final JBFileProcessCallback callback) {
+        String path = JBHttpClient.getFilePath("master/process");
+        JBHttpParams params = new JBHttpParams();
+        if (!JBUtils.isEmpty(fileId)) {
+            params.put("fileId", fileId);
+        }
+        if (!JBUtils.isEmpty(platform)) {
+            params.put("platform", platform);
+        }
+        if (!JBUtils.isEmpty("policy")) {
+            params.put("policy", policy);
+        }
+        JBHttpClient.INSTANCE().sendRequest(path, JBHttpMethod.POST, params, null, sync, new JBObjectCallback() {
             @Override
             public void onSuccess(JBResult result) {
                 if (callback != null) {
