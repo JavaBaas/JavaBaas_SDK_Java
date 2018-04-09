@@ -205,7 +205,7 @@ public final class JBFile extends JBObject{
         });
     }
 
-    public static JBFile process(String fileId, String platform, String policy) throws JBException {
+    public static JBFile process(String fileId, String platform, Map<String, Object> policy) throws JBException {
         final JBFile[] result = {null};
         processFileWithJavabaas(fileId, platform, policy, true, new JBFileProcessCallback() {
             @Override
@@ -223,11 +223,11 @@ public final class JBFile extends JBObject{
         return result[0];
     }
 
-    public static void processInBackground(String fileId, String platform, String policy, JBFileProcessCallback callback) {
+    public static void processInBackground(String fileId, String platform, Map<String, Object> policy, JBFileProcessCallback callback) {
         processFileWithJavabaas(fileId, platform, policy, false, callback);
     }
 
-    private static void processFileWithJavabaas(final String fileId, final String platform, final String policy, final boolean sync, final JBFileProcessCallback callback) {
+    private static void processFileWithJavabaas(final String fileId, final String platform, final Map<String, Object> policy, final boolean sync, final JBFileProcessCallback callback) {
         String path = JBHttpClient.getFilePath("master/process");
         JBHttpParams params = new JBHttpParams();
         if (!JBUtils.isEmpty(fileId)) {
@@ -236,7 +236,7 @@ public final class JBFile extends JBObject{
         if (!JBUtils.isEmpty(platform)) {
             params.put("platform", platform);
         }
-        if (!JBUtils.isEmpty("policy")) {
+        if (policy != null) {
             params.put("policy", policy);
         }
         JBHttpClient.INSTANCE().sendRequest(path, JBHttpMethod.POST, params, null, sync, new JBObjectCallback() {
