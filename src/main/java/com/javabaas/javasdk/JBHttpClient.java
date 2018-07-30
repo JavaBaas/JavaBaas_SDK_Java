@@ -108,31 +108,31 @@ public class JBHttpClient {
 
 
     private Request.Builder getRequestBuilder() throws JBException {
-        if (!JBConfig.getInstance().finishInit) {
+        if (!JB.getInstance().getConfig().finishInit) {
             throw new JBException(JBCode.INTERNAL_ERROR.getCode(), "JBConfig未初始化");
         }
         long timestamp = new Date().getTime();
-        String timestampStr = String.valueOf(timestamp - JBConfig.getInstance().adjustTime);
+        String timestampStr = String.valueOf(timestamp - JB.getInstance().getConfig().adjustTime);
         String nonce = UUID.randomUUID().toString().replace("-", "");
 
         Request.Builder builder = new Request.Builder();
         builder.addHeader("Content-Type", "application/json");
-        builder.addHeader("JB-Plat", JBConfig.getInstance().plat);
+        builder.addHeader("JB-Plat", JB.getInstance().getConfig().plat);
         builder.addHeader("JB-Timestamp", timestampStr);
         builder.addHeader("JB-Nonce", nonce);
-        String appId = JBConfig.getInstance().appId;
+        String appId = JB.getInstance().getConfig().appId;
         if (!JBUtils.isEmpty(appId)) {
-            builder.addHeader("JB-AppId", JBConfig.getInstance().appId);
+            builder.addHeader("JB-AppId", JB.getInstance().getConfig().appId);
         }
-        String key = JBConfig.getInstance().key;
+        String key = JB.getInstance().getConfig().key;
         if (!JBUtils.isEmpty(key)) {
             builder.addHeader("JB-Sign", getSign(key, timestampStr, nonce));
         }
-        String masterKey = JBConfig.getInstance().masterKey;
+        String masterKey = JB.getInstance().getConfig().masterKey;
         if (!JBUtils.isEmpty(masterKey)) {
             builder.addHeader("JB-MasterSign", getSign(masterKey, timestampStr, nonce));
         }
-        String adminKey = JBConfig.getInstance().adminKey;
+        String adminKey = JB.getInstance().getConfig().adminKey;
         if (!JBUtils.isEmpty(adminKey)) {
             builder.addHeader("JB-AdminSign", getSign(adminKey, timestampStr, nonce));
         }
@@ -223,10 +223,10 @@ public class JBHttpClient {
     }
 
     private static String getPath(String domain, String extra) {
-        if (JBUtils.isEmpty(JBConfig.getInstance().remote)) {
+        if (JBUtils.isEmpty(JB.getInstance().getConfig().remote)) {
             return null;
         }
-        StringBuffer urlPath =  new StringBuffer(JBConfig.getInstance().remote);
+        StringBuffer urlPath =  new StringBuffer(JB.getInstance().getConfig().remote);
         if (JBUtils.isEmpty(domain)) {
             return null;
         } else {
@@ -241,7 +241,7 @@ public class JBHttpClient {
 
 
     public static String getStatusPath() {
-        return JBConfig.getInstance().remote;
+        return JB.getInstance().getConfig().remote;
     }
 
 
