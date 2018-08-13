@@ -467,7 +467,7 @@ public class JBObject {
         this.saveObjectToJavaBaas(false, callback);
     }
 
-    private void saveObjectToJavaBaas(final boolean sync, final JBBooleanCallback callback) {
+    private void saveObjectToJavaBaas(boolean sync, JBBooleanCallback callback) {
         String urlPath;
         JBHttpMethod method;
         if (!JBUtils.isEmpty(this.objectId)) {
@@ -490,7 +490,11 @@ public class JBObject {
             }
         }
         Map<String, Object> body = getObjectForSaveBody();
-        JBHttpClient.INSTANCE().sendRequest(urlPath, method, jbHttpParams, body, sync, new JBObjectCallback() {
+        saveToJavaBaas(urlPath, method, jbHttpParams, body, sync, callback);
+    }
+
+    protected void saveToJavaBaas(final String path, final JBHttpMethod method, final JBHttpParams params, final Map<String, Object> body, final boolean sync, final JBBooleanCallback callback) {
+        JBHttpClient.INSTANCE().sendRequest(path, method, params, body, sync, new JBObjectCallback() {
             @Override
             public void onSuccess(JBResult result) {
                 if (result.getData() != null && result.getData().get("result") != null) {

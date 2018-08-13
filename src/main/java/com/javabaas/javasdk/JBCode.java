@@ -6,6 +6,7 @@ package com.javabaas.javasdk;
  */
 public enum JBCode {
     SUCCESS(0, "成功"),
+    ERROR(1, "失败"),
     OTHER_HTTP_ERROR(-1, "网络请求错误，请检查"),
     NOT_FOUND(404, "无效地址"),
     INTERNAL_ERROR(500, "服务器内部错误"),

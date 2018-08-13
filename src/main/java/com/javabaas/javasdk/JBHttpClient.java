@@ -222,6 +222,10 @@ public class JBHttpClient {
         return getPath("master/account/setAccount", String.valueOf(type));
     }
 
+    public static String getRolePath(String extra) {
+        return getPath("roles", extra);
+    }
+
     private static String getPath(String domain, String extra) {
         if (JBUtils.isEmpty(JB.getInstance().getConfig().remote)) {
             return null;

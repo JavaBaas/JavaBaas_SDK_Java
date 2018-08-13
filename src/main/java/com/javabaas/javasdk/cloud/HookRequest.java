@@ -11,7 +11,7 @@ public class HookRequest extends JBRequest {
 
     private String name;
     private HookEvent event;
-    private Map<String, ?> object;
+    private Map<String, Object> object;
 
     public String getName() {
         return name;
@@ -29,11 +29,11 @@ public class HookRequest extends JBRequest {
         this.event = event;
     }
 
-    public Map<String, ?> getObject() {
+    public Map<String, Object> getObject() {
         return object;
     }
 
-    public void setObject(Map<String, ?> object) {
+    public void setObject(Map<String, Object> object) {
         this.object = object;
     }
 

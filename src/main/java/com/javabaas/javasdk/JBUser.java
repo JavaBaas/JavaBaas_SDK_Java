@@ -120,7 +120,7 @@ public class JBUser extends JBObject {
     private void signUpFromJavabaas(final boolean sync, final JBBooleanCallback callback) {
         String path = JBHttpClient.getUserPath();
         Map<String, Object> body = this.getObjectForSaveBody();
-        sendRequestForSignUp(path, body, sync, callback);
+        saveToJavaBaas(path, JBHttpMethod.POST, null, body, sync, callback);
     }
 
     /**
@@ -215,28 +215,7 @@ public class JBUser extends JBObject {
         Map<String, Object> body = new HashMap<>();
         body.put(AUTH, auth);
         body.put("user", getObjectForSaveBody());
-        sendRequestForSignUp(path, body, sync, callback);
-    }
-
-    private void sendRequestForSignUp(final String path, final Map<String, Object> body, final boolean sync, final JBBooleanCallback callback) {
-        JBHttpClient.INSTANCE().sendRequest(path, JBHttpMethod.POST, null, body, sync, new JBObjectCallback() {
-            @Override
-            public void onSuccess(JBResult result) {
-                if (result.getData() != null && result.getData().get("result") != null) {
-                    copyFromMap((Map<String, Object>) result.getData().get("result"));
-                }
-                if (callback != null) {
-                    callback.done(true, null);
-                }
-            }
-
-            @Override
-            public void onFailure(JBException error) {
-                if (callback != null) {
-                    callback.done(false, error);
-                }
-            }
-        });
+        saveToJavaBaas(path, JBHttpMethod.POST, null, body, sync, callback);
     }
 
     /**
