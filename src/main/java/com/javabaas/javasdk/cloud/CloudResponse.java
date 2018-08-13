@@ -1,5 +1,7 @@
 package com.javabaas.javasdk.cloud;
 
+import com.javabaas.javasdk.JBCode;
+
 import java.util.Map;
 
 /**
@@ -7,13 +9,25 @@ import java.util.Map;
  */
 public class CloudResponse extends JBResponse {
 
-    private Map<String, ?> data;
+    private Map<String, Object> data;
 
-    public Map<String, ?> getData() {
+    public Map<String, Object> getData() {
         return data;
     }
 
-    public void setData(Map<String, ?> data) {
+    public void setData(Map<String, Object> data) {
         this.data = data;
+    }
+
+    public static CloudResponse success() {
+        CloudResponse response = new CloudResponse();
+        response.setCode(JBCode.SUCCESS.getCode());
+        return response;
+    }
+
+    public static CloudResponse error(int code) {
+        CloudResponse response = new CloudResponse();
+        response.setCode(code);
+        return response;
     }
 }

@@ -1,5 +1,8 @@
 package com.javabaas.javasdk.cloud;
 
+import com.javabaas.javasdk.JBUser;
+import com.javabaas.javasdk.JBUtils;
+
 import java.util.Map;
 
 /**
@@ -11,7 +14,7 @@ public abstract class JBRequest {
 
     private String appId;
     private String plat;
-    private Map<String, ?> user;
+    private Map<String, Object> user;
     private String timestamp;
 
     public abstract String requestType();
@@ -32,12 +35,14 @@ public abstract class JBRequest {
         this.plat = plat;
     }
 
-    public Map<String, ?> getUser() {
-        return user;
-    }
 
-    public void setUser(Map<String, ?> user) {
-        this.user = user;
+    public JBUser getUser() {
+        if (user != null) {
+            JBUser jbUser = new JBUser();
+            JBUtils.copyPropertiesFromMapToJBObject(jbUser, user);
+            return jbUser;
+        }
+        return null;
     }
 
     public String getTimestamp() {
