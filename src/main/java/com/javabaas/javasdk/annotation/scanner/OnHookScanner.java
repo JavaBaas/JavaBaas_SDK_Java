@@ -6,7 +6,6 @@ import com.javabaas.javasdk.annotation.OnHook;
 import com.javabaas.javasdk.cloud.HookListener;
 import com.javabaas.javasdk.cloud.HookRequest;
 import com.javabaas.javasdk.cloud.HookResponse;
-import com.javabaas.javasdk.cloud.JBCloudException;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
@@ -34,17 +33,15 @@ public class OnHookScanner implements AnnotationScanner {
         //注入方法
         jb.addHookListener(name, event, new HookListener() {
             @Override
-            public HookResponse onHook(HookRequest hookRequest) {
+            public HookResponse onHook(HookRequest hookRequest) throws Throwable {
+                Object[] args = new Object[method.getParameterTypes().length];
+                if (HookRequestIndex != -1) {
+                    args[HookRequestIndex] = hookRequest;
+                }
                 try {
-                    Object[] args = new Object[method.getParameterTypes().length];
-                    if (HookRequestIndex != -1) {
-                        args[HookRequestIndex] = hookRequest;
-                    }
                     return (HookResponse) method.invoke(object, args);
-                } catch (InvocationTargetException e) {
-                    throw new JBCloudException(e.getCause());
-                } catch (Exception e) {
-                    throw new JBCloudException(e);
+                } catch (IllegalAccessException | InvocationTargetException e) {
+                    throw e.getCause();
                 }
             }
         });

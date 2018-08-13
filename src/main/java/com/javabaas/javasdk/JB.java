@@ -133,7 +133,7 @@ public class JB {
      * @param requestType 请求类型
      * @param body        请求主体
      */
-    public static JBResponse onRequest(String requestType, String body) {
+    public static JBResponse onRequest(String requestType, String body) throws Throwable {
         try {
             //整理请求体
             if (requestType.equals(JBRequest.REQUEST_CLOUD)) {
@@ -150,12 +150,12 @@ public class JB {
         return null;
     }
 
-    private static CloudResponse onCloudRequest(CloudRequest cloudRequest) {
+    private static CloudResponse onCloudRequest(CloudRequest cloudRequest) throws Throwable {
         CloudListener listener = INSTANCE.cloudListeners.get(cloudRequest.getName());
         return listener.onCloud(cloudRequest);
     }
 
-    private static HookResponse onHookRequest(HookRequest hookRequest) {
+    private static HookResponse onHookRequest(HookRequest hookRequest) throws Throwable {
         HookListener listener = INSTANCE.hookListeners.get(HookSetting.hookName(hookRequest.getName(), hookRequest.getEvent()));
         return listener.onHook(hookRequest);
     }

@@ -5,7 +5,6 @@ import com.javabaas.javasdk.annotation.OnCloud;
 import com.javabaas.javasdk.cloud.CloudListener;
 import com.javabaas.javasdk.cloud.CloudRequest;
 import com.javabaas.javasdk.cloud.CloudResponse;
-import com.javabaas.javasdk.cloud.JBCloudException;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
@@ -32,17 +31,15 @@ public class OnCloudScanner implements AnnotationScanner {
         //注入方法
         jb.addCloudListener(name, new CloudListener() {
             @Override
-            public CloudResponse onCloud(CloudRequest request) {
+            public CloudResponse onCloud(CloudRequest request) throws Throwable {
+                Object[] args = new Object[method.getParameterTypes().length];
+                if (cloudRequestIndex != -1) {
+                    args[cloudRequestIndex] = request;
+                }
                 try {
-                    Object[] args = new Object[method.getParameterTypes().length];
-                    if (cloudRequestIndex != -1) {
-                        args[cloudRequestIndex] = request;
-                    }
                     return (CloudResponse) method.invoke(object, args);
-                } catch (InvocationTargetException e) {
-                    throw new JBCloudException(e.getCause());
-                } catch (Exception e) {
-                    throw new JBCloudException(e);
+                } catch (IllegalAccessException | InvocationTargetException e) {
+                    throw e.getCause();
                 }
             }
         });
