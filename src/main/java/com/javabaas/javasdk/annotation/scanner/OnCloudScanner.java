@@ -1,6 +1,7 @@
 package com.javabaas.javasdk.annotation.scanner;
 
 import com.javabaas.javasdk.JB;
+import com.javabaas.javasdk.JBException;
 import com.javabaas.javasdk.annotation.OnCloud;
 import com.javabaas.javasdk.cloud.CloudListener;
 import com.javabaas.javasdk.cloud.CloudRequest;
@@ -39,7 +40,14 @@ public class OnCloudScanner implements AnnotationScanner {
                 try {
                     return (CloudResponse) method.invoke(object, args);
                 } catch (IllegalAccessException | InvocationTargetException e) {
-                    throw e.getCause();
+                    if (e.getCause() instanceof JBException) {
+                        CloudResponse response = new CloudResponse();
+                        response.setCode(((JBException) e.getCause()).getCode());
+                        response.setMessage(e.getCause().getMessage());
+                        return response;
+                    } else {
+                        throw e.getCause();
+                    }
                 }
             }
         });

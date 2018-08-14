@@ -134,19 +134,16 @@ public class JB {
      * @param body        请求主体
      */
     public static JBResponse onRequest(String requestType, String body) throws Throwable {
-        try {
-            //整理请求体
-            if (requestType.equals(JBRequest.REQUEST_CLOUD)) {
-                //云方法
-                CloudRequest cloudRequest = JBUtils.readValue(body, CloudRequest.class);
-                return onCloudRequest(cloudRequest);
-            } else if (requestType.equals(JBRequest.REQUEST_HOOK)) {
-                //钩子
-                HookRequest hookRequest = JBUtils.readValue(body, HookRequest.class);
-                return onHookRequest(hookRequest);
-            }  //请求类型不匹配
-        } catch (JBException ignored) {
-        }
+        //整理请求体
+        if (requestType.equals(JBRequest.REQUEST_CLOUD)) {
+            //云方法
+            CloudRequest cloudRequest = JBUtils.readValue(body, CloudRequest.class);
+            return onCloudRequest(cloudRequest);
+        } else if (requestType.equals(JBRequest.REQUEST_HOOK)) {
+            //钩子
+            HookRequest hookRequest = JBUtils.readValue(body, HookRequest.class);
+            return onHookRequest(hookRequest);
+        }  //请求类型不匹配
         return null;
     }
 
