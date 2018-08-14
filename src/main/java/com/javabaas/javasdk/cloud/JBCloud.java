@@ -101,7 +101,7 @@ public class JBCloud {
 
     private static CloudSetting getCloudSetting(String remote) {
         CloudSetting cloudSetting = new CloudSetting();
-        if (JBUtils.isEmpty(remote)) {
+        if (!JBUtils.isEmpty(remote)) {
             cloudSetting.setCustomerHost(remote.endsWith("/") ? remote : remote + "/");
         }
         Set<String> clouds = JB.getInstance().getCloudListeners().keySet();
