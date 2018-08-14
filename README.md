@@ -10,7 +10,7 @@
 	<dependency>
 		<groupId>com.javabaas</groupId>
 		<artifactId>javasdk</artifactId>
-		<version>2.0.3</version>
+		<version>2.0.6</version>
 	</dependency>
 </dependencies>
 ```
@@ -33,36 +33,36 @@ dependencies {
 `JavaSDK`提供三种权限的初始化方法，使用者可以根据实际情况使用相应的`JavaSDK`初始化方法：
 
 ### 初始化 应用普通 权限
-在 `main` 函数中间调用 `JBConfig.init` 来设置你的应用普通权限初始化的信息：
+在 `main` 函数中间调用 `JB.init` 来设置你的应用普通权限初始化的信息：
 
 ``` java
   public static void main(String[] args) {
 	// 参数依次为 请求地址（例如：http://127.0.0.1:8080/api）、appId("594895b0b55198292ae266f1")、key("a8c18441d7ab4dcd9ed78477015ab8b2")
-    JBConfig.init("http://127.0.0.1:8080/api", "594895b0b55198292ae266f1","a8c18441d7ab4dcd9ed78477015ab8b2")
+    JB.init("http://127.0.0.1:8080/api", "594895b0b55198292ae266f1","a8c18441d7ab4dcd9ed78477015ab8b2")
   }
 ```
 
-提示: 普通权限用于操作数据，一般用户客户端程序。
+提示: 普通权限用于操作数据，一般用于客户端程序。
 
 ### 初始化 master 权限
-在 `main` 函数中间调用 `JBConfig.initAdmin` 来设置你的 master 管理权限初始化的信息：
+在 `main` 函数中间调用 `JB.initAdmin` 来设置你的 master 管理权限初始化的信息：
 
 ``` java
   public static void main(String[] args) {
 	// 参数依次为 请求地址（例如：http://127.0.0.1:8080/api）、appId("594895b0b55198292ae266f1")、masterKey("cebde78a2d2d48c9870cf4887cbb3eb1")
-    JBConfig.initMaster("http://127.0.0.1:8080/api", "594895b0b55198292ae266f1","cebde78a2d2d48c9870cf4887cbb3eb1")
+    JB.initMaster("http://127.0.0.1:8080/api", "594895b0b55198292ae266f1","cebde78a2d2d48c9870cf4887cbb3eb1")
   }
 ```
 
 提示: Master权限用于无视ACL的操作数据，一般用于后台云代码服务器。
 
 ### 初始化 admin 权限
-在 `main` 函数中间调用 `JBConfig.initAdmin` 来设置你的 `admin` 超级权限初始化的信息：
+在 `main` 函数中间调用 `JB.initAdmin` 来设置你的 `admin` 超级权限初始化的信息：
 
 ``` java
   public static void main(String[] args) {
 	// 参数依次为 请求地址（"例如："http://127.0.0.1:8080/api"）、adminKey("JavaBaas")
-    JBConfig.initAdmin("http://127.0.0.1:8080/api", "JavaBaas")
+    JB.initAdmin("http://127.0.0.1:8080/api", "JavaBaas")
   }
 ```
 
