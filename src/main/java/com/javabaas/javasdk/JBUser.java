@@ -375,9 +375,7 @@ public class JBUser extends JBObject {
 
     private static void loginWithSnsFromJavabaas(JBAuth auth, JBSnsType type, boolean sync, JBLoginCallback callback) {
         String path = JBHttpClient.getUserPath("loginWithSns/" + type.getCode());
-        Map<String, Object> body = new HashMap<>();
-        body.put(AUTH, auth);
-        sendRequestForLogin(path, body, sync, callback);
+        sendRequestForLogin(path, auth, sync, callback);
     }
 
     private static void sendRequestForLogin(final String path, final Map<String, Object> body, final boolean sync, final JBLoginCallback callback) {
@@ -396,6 +394,119 @@ public class JBUser extends JBObject {
             public void onFailure(JBException error) {
                 if (callback != null) {
                     callback.done(false, null, error);
+                }
+            }
+        });
+    }
+
+    /**
+     * 获取绑定用短信验证码 同步
+     *
+     * @param phone 手机号
+     * @throws JBException 异常信息
+     */
+    public static void getBindCode(String phone) throws JBException {
+        getBindCodeFromJavabaas(phone, true, new JBBooleanCallback() {
+            @Override
+            public void done(boolean success, JBException e) {
+                if (!success) {
+                    JBExceptionHolder.add(e);
+                }
+            }
+        });
+        if (JBExceptionHolder.exists()) {
+            throw JBExceptionHolder.remove();
+        }
+    }
+
+    /**
+     * 获取绑定用短信验证码 异步
+     *
+     * @param phone 手机号
+     * @param callback 获取绑定用短信验证码成功或者失败回调
+     */
+    public static void getBindCodeInBackground(String phone, JBBooleanCallback callback) {
+        getBindCodeFromJavabaas(phone,false, callback);
+    }
+
+    private static void getBindCodeFromJavabaas(final String phone, final boolean sync, final JBBooleanCallback callback) {
+        if (JBUtils.isEmpty(phone)) {
+            callback.done(false, new JBException(JBCode.REQUEST_PARAM_ERROR));
+            return;
+        }
+        String path = JBHttpClient.getUserPath("getBindCode/" + phone);
+        JBHttpClient.INSTANCE().sendRequest(path, JBHttpMethod.GET, null, null, sync, new JBObjectCallback() {
+            @Override
+            public void onSuccess(JBResult result) {
+                if (callback == null) {
+                } else {
+                    callback.done(true, null);
+                }
+            }
+
+            @Override
+            public void onFailure(JBException error) {
+                if (callback != null) {
+                    callback.done(false, error);
+                }
+            }
+        });
+    }
+
+    /**
+     * 绑定手机号 同步
+     *
+     * @param phone 手机号
+     * @param code  手机绑定验证码
+     * @throws JBException 异常信息
+     */
+    public static void bindPhone(String phone, String code) throws JBException {
+        bindPhoneWithJavabaas(phone, code, true, new JBBooleanCallback() {
+            @Override
+            public void done(boolean success, JBException e) {
+                if (!success) {
+                    JBExceptionHolder.add(e);
+                }
+            }
+        });
+        if (JBExceptionHolder.exists()) {
+            throw JBExceptionHolder.remove();
+        }
+    }
+
+    /**
+     * 绑定手机号 异步
+     *
+     * @param phone 手机号
+     * @param code  手机绑定验证码
+     * @param callback 回调信息
+     */
+    public static void bindPhoneInBackground(String phone, String code, JBBooleanCallback callback) {
+        bindPhoneWithJavabaas(phone, code, false, callback);
+    }
+
+    private static void bindPhoneWithJavabaas(final String phone, final String code, final boolean sync, final JBBooleanCallback callback) {
+        if (JBUtils.isEmpty(phone) || JBUtils.isEmpty(code)) {
+            callback.done(false, new JBException(JBCode.REQUEST_PARAM_ERROR));
+            return;
+        }
+        String path = JBHttpClient.getUserPath("bindPhone");
+        Map<String, Object> body = new HashMap<>();
+        body.put("phone", phone);
+        body.put("code", code);
+        JBHttpClient.INSTANCE().sendRequest(path, JBHttpMethod.POST, null, body, sync, new JBObjectCallback() {
+            @Override
+            public void onSuccess(JBResult result) {
+                if (callback == null) {
+                } else {
+                    callback.done(true, null);
+                }
+            }
+
+            @Override
+            public void onFailure(JBException error) {
+                if (callback != null) {
+                    callback.done(false, error);
                 }
             }
         });
@@ -554,7 +665,7 @@ public class JBUser extends JBObject {
         }
         Object o = map.get("result");
         if (o instanceof Map) {
-            JBUtils.copyPropertiesFromMapToJBObject(user, map);
+            JBUtils.copyPropertiesFromMapToJBObject(user, (Map<String, Object>) o);
         }
     }
 }
