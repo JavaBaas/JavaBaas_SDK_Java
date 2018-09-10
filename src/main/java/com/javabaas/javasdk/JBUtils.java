@@ -158,9 +158,9 @@ public class JBUtils {
             return;
         }
         if (type.equals("File")) {
-            JBFile file = JBFile.fileFromMap(map);
+            JBFile file = JBFile.getFileFromMap(map);
             parent.put(key, file);
-        } else if (type.equals("Pointer") || (!JBUtils.isEmpty(objectId) && !JBUtils.isEmpty(type))){
+        } else if (type.equals("Pointer") || (!JBUtils.isEmpty(objectId) && !JBUtils.isEmpty(type))) {
             JBObject object = parseObjectFromMap(map);
             parent.put(key, object);
         } else {

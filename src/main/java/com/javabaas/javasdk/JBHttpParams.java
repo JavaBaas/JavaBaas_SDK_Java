@@ -38,8 +38,10 @@ public class JBHttpParams {
             if (value instanceof Map) {
                 ObjectMapper objectMapper = new ObjectMapper();
                 v = objectMapper.writeValueAsString(value);
-            } else {
+            } else if (value != null) {
                 v = value.toString();
+            } else {
+                return;
             }
         } catch (JsonProcessingException e) {
             throw new IllegalArgumentException("url错误");

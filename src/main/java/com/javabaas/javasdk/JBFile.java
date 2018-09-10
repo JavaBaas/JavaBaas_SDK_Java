@@ -137,17 +137,14 @@ public final class JBFile extends JBObject{
      *
      * @param platform      保存目的平台 例如"qiniu"
      * @param policy        保存策略
-     * @return              保存后的JBFile信息
      * @throws JBException  异常信息
      */
-    public JBFile saveFile(String platform, String policy) throws JBException {
+    public void saveFile(String platform, String policy) throws JBException {
         final JBFile[] result = {null};
         saveFileToJavabaas(platform, policy, true, new JBFileSaveCallback() {
             @Override
-            public void done(boolean success, JBFile file, JBException e) {
-                if (success) {
-                    result[0] = file;
-                } else {
+            public void done(boolean success, JBException e) {
+                if (!success) {
                     JBExceptionHolder.add(e);
                 }
             }
@@ -155,7 +152,6 @@ public final class JBFile extends JBObject{
         if (JBExceptionHolder.exists()) {
             throw JBExceptionHolder.remove();
         }
-        return result[0];
     }
 
     /**
@@ -192,14 +188,15 @@ public final class JBFile extends JBObject{
             public void onSuccess(JBResult result) {
                 if (callback != null) {
                     Map<String, Object> data = result.getData();
-                    callback.done(true, fileFromMap((Map<String, Object>) data.get("file")), null);
+                    fileFromMap((Map<String, Object>) data.get("file"));
+                    callback.done(true, null);
                 }
             }
 
             @Override
             public void onFailure(JBException error) {
                 if (callback != null) {
-                    callback.done(false, null, error);
+                    callback.done(false, error);
                 }
             }
         });
@@ -244,7 +241,7 @@ public final class JBFile extends JBObject{
             public void onSuccess(JBResult result) {
                 if (callback != null) {
                     Map<String, Object> data = result.getData();
-                    callback.done(true, fileFromMap((Map<String, Object>) data.get("file")), null);
+                    callback.done(true, getFileFromMap((Map<String, Object>) data.get("file")), null);
                 }
             }
 
@@ -257,7 +254,22 @@ public final class JBFile extends JBObject{
         });
     }
 
-    public static JBFile fileFromMap(Map<String, Object> map) {
+    private void fileFromMap(Map<String, Object> map) {
+        String objectId = (String) map.get(OBJECT_ID);
+        String url = (String) map.get(URL);
+        String name = (String) map.get(NAME);
+        if (!JBUtils.isEmpty(objectId)) {
+            this.setObjectId(objectId);
+        }
+        if (!JBUtils.isEmpty(url)) {
+            this.setUrl(url);
+        }
+        if (!JBUtils.isEmpty(name)) {
+            this.setName(name);
+        }
+    }
+
+    public static JBFile getFileFromMap(Map<String, Object> map) {
         JBFile file = new JBFile();
         String objectId = (String) map.get(OBJECT_ID);
         String url = (String) map.get(URL);
