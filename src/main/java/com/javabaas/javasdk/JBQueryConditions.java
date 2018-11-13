@@ -272,7 +272,7 @@ public class JBQueryConditions {
         if (value instanceof JBObject) {
             JBObject object = (JBObject) value;
             if (!JBUtils.isEmpty(object.className) && !JBUtils.isEmpty(object.objectId)) {
-                Map<String, Object> pointer = new HashMap<>();
+                Map<String, Object> pointer = new LinkedHashMap<>();
                 pointer.put("__type", "Pointer");
                 pointer.put("className", object.className);
                 pointer.put("_id", object.objectId);
