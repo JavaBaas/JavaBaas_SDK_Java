@@ -258,14 +258,6 @@ public class JBUtils {
         return list;
     }
 
-    public static Map<String, Object> mapFromGeoPoint(JBGeoPoint point) {
-        Map<String, Object> result = new LinkedHashMap<>(16);
-        result.put(JBGeoPoint.LONGTITUDE_KEY, point.getLongitude());
-        result.put(JBGeoPoint.LATITUDE_KEY, point.getLatitude());
-        result.put("__type", "GeoPoint");
-        return result;
-    }
-
     public static Map<String, Object> createMap(String cmp, Object value) {
         Map<String, Object> dict = new HashMap<String, Object>();
         dict.put(cmp, value);

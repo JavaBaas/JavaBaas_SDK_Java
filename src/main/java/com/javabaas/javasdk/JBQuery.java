@@ -464,20 +464,6 @@ public class JBQuery<T extends JBObject> {
     }
 
     /**
-     *  方法先保留，最近要加上
-     */
-
-//    public JBQuery<T> whereNear(String key, JBGeoPoint point) {
-//        conditions.whereNear(key, point);
-//        return this;
-//    }
-//
-//    public JBQuery<T> whereWithinGeoBox(String key, JBGeoPoint southwest, JBGeoPoint northeast) {
-//        conditions.whereWithinGeoBox(key, southwest, northeast);
-//        return this;
-//    }
-
-    /**
      * 查询附近X距离（单位米）内的数据
      *
      * @param key  key
@@ -489,34 +475,6 @@ public class JBQuery<T extends JBObject> {
         conditions.whereWithinKilometers(key, point, maxDistance);
         return this;
     }
-
-//    public JBQuery<T> whereWithinKilometers(String key, JBGeoPoint point, double maxDistance,
-//                                            double minDistance) {
-//        conditions.whereWithinKilometers(key, point, maxDistance, minDistance);
-//        return this;
-//    }
-//
-//    public JBQuery<T> whereWithinMiles(String key, JBGeoPoint point, double maxDistance) {
-//        conditions.whereWithinMiles(key, point, maxDistance);
-//        return this;
-//    }
-//
-//    public JBQuery<T> whereWithinMiles(String key, JBGeoPoint point, double maxDistance,
-//                                       double minDistance) {
-//        conditions.whereWithinMiles(key, point, maxDistance, minDistance);
-//        return this;
-//    }
-//
-//    public JBQuery<T> whereWithinRadians(String key, JBGeoPoint point, double maxDistance) {
-//        conditions.whereWithinRadians(key, point, maxDistance);
-//        return this;
-//    }
-//
-//    public JBQuery<T> whereWithinRadians(String key, JBGeoPoint point, double maxDistance,
-//                                         double minDistance) {
-//        conditions.whereWithinRadians(key, point, maxDistance, minDistance);
-//        return this;
-//    }
 
     /**
      * 查询字段匹配正则<br/>
