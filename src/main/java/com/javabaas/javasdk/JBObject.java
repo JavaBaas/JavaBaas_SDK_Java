@@ -191,14 +191,18 @@ public class JBObject {
             map.put("className", ((JBObject)value).getClassName());
             map.put("_id", ((JBObject)value).getObjectId());
             saveData.put(key, map);
+        } else if (value instanceof JBGeoPoint) {
+            List<Double> list = JBUtils.listFromGeoPoint((JBGeoPoint) value);
+            saveData.put(key, list);
         } else {
             saveData.put(key, value);
         }
     }
 
     private boolean checkKey(String key) {
-        if (JBUtils.isEmpty(key))
+        if (JBUtils.isEmpty(key)) {
             throw new IllegalArgumentException("字段为空");
+        }
         if (key.startsWith("_")) {
             throw new IllegalArgumentException("字段不能以'_'开头");
         }
@@ -219,28 +223,41 @@ public class JBObject {
 
     public int getInt(String key) {
         Number v = (Number) get(key);
-        if (v != null)
+        if (v != null) {
             return v.intValue();
+        }
         return 0;
     }
 
     public long getLong(String key) {
         Number number = (Number) get(key);
-        if (number != null)
+        if (number != null) {
             return number.longValue();
+
+        }
         return 0L;
     }
 
     public double getDouble(String key) {
         Number number = (Number) get(key);
-        if (number != null)
+        if (number != null) {
             return number.doubleValue();
+        }
         return 0;
     }
 
     public boolean getBoolean(String key) {
         Boolean b = (Boolean) get(key);
         return b == null ? false : b;
+    }
+
+    public JBGeoPoint getJBGeoPoint(String key) {
+        List<Double> list = getList(key);
+        if (list.size() > 1) {
+           return new JBGeoPoint(list.get(1), list.get(0));
+        } else {
+            return null;
+        }
     }
 
     public <T extends JBObject> T getJBObject(String key) {

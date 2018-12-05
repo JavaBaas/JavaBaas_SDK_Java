@@ -210,8 +210,9 @@ public class JBUtils {
     }
 
     public static boolean isDigitString(String s) {
-        if (s == null)
+        if (s == null) {
             return false;
+        }
         for (int i = 0; i < s.length(); i++) {
             char c = s.charAt(i);
             if (!Character.isDigit(c)) {
@@ -249,6 +250,27 @@ public class JBUtils {
         }
     }
     /****************JSON END****************/
+
+    public static List<Double> listFromGeoPoint(JBGeoPoint point) {
+        List<Double> list = new ArrayList<>();
+        list.add(point.getLongitude());
+        list.add(point.getLatitude());
+        return list;
+    }
+
+    public static Map<String, Object> mapFromGeoPoint(JBGeoPoint point) {
+        Map<String, Object> result = new LinkedHashMap<>(16);
+        result.put(JBGeoPoint.LONGTITUDE_KEY, point.getLongitude());
+        result.put(JBGeoPoint.LATITUDE_KEY, point.getLatitude());
+        result.put("__type", "GeoPoint");
+        return result;
+    }
+
+    public static Map<String, Object> createMap(String cmp, Object value) {
+        Map<String, Object> dict = new HashMap<String, Object>();
+        dict.put(cmp, value);
+        return dict;
+    }
 
     public static boolean isEmpty(String string) {
         return string == null || string.trim().equals("");

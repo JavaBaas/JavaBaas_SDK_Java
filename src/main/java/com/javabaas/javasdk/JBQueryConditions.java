@@ -21,6 +21,7 @@ public class JBQueryConditions {
     private int skip = -1;
     private LinkedHashMap<String, Integer> order;
     private Map<String, String> parameters;
+    private boolean whereContainsGeo = false;
 
     public JBQueryConditions() {
         where = new HashMap<>();
@@ -93,6 +94,10 @@ public class JBQueryConditions {
     public void orderByAscending(String key) {
         order = new LinkedHashMap<>();
         order.put(key, 1);
+    }
+
+    public void orderByGeoPoint() {
+        whereContainsGeo = true;
     }
 
     public void addDescendingOrder(String key) {
@@ -198,6 +203,8 @@ public class JBQueryConditions {
                 parameters.put(ORDER, JBUtils.writeValueAsString(order));
             } catch (JBException e) {
             }
+        } else if (whereContainsGeo) {
+            parameters.put(ORDER, "{}");
         }
         if (include != null && include.size() > 0) {
             parameters.put(INCLUDE, join(include, ","));
@@ -213,10 +220,11 @@ public class JBQueryConditions {
         boolean first = true;
         for (String item : list)
         {
-            if (first)
+            if (first) {
                 first = false;
-            else
+            } else {
                 sb.append(conjunction);
+            }
             sb.append(item);
         }
         return sb.toString();
@@ -325,6 +333,79 @@ public class JBQueryConditions {
 
     public void whereEndWith(String key, String suffix) {
         whereMatches(key, String.format(".*%s$", suffix));
+    }
+
+    public void whereNear(String key, JBGeoPoint point) {
+        this.addWhereItem(key, "$nearSphere", JBUtils.mapFromGeoPoint(point));
+        this.orderByGeoPoint();
+    }
+
+    public void whereWithinGeoBox(String key, JBGeoPoint southwest, JBGeoPoint northeast) {
+        List<Map<String, Object>> box = new LinkedList<Map<String, Object>>();
+        box.add(JBUtils.mapFromGeoPoint(southwest));
+        box.add(JBUtils.mapFromGeoPoint(northeast));
+        Map<String, Object> map = JBUtils.createMap("$box", box);
+        this.addWhereItem(key, "$within", map);
+        this.orderByGeoPoint();
+    }
+
+    public void whereWithinKilometers(String key, JBGeoPoint point, double maxDistance) {
+        Map<String, Object> geometry = new HashMap<>(16);
+        geometry.put("type", "Point");
+        geometry.put("coordinates", JBUtils.listFromGeoPoint(point));
+        Map<String, Object> nearSphere = JBUtils.createMap("$geometry", geometry);
+        nearSphere.put("$maxDistance", maxDistance);
+        Map<String, Object> map = JBUtils.createMap("$nearSphere", nearSphere);
+        addWhereItem(key, null, map);
+        this.orderByGeoPoint();
+    }
+
+    public void whereWithinKilometers(String key, JBGeoPoint point, double maxDistance,
+                                      double minDistance) {
+        Map<String, Object> map = JBUtils.createMap("$nearSphere", JBUtils.mapFromGeoPoint(point));
+        if (maxDistance >= 0) {
+            map.put("$maxDistanceInKilometers", maxDistance);
+        }
+        if (minDistance >= 0) {
+            map.put("$minDistanceInKilometers", minDistance);
+        }
+        addWhereItem(key, null, map);
+        this.orderByGeoPoint();
+    }
+
+    public void whereWithinMiles(String key, JBGeoPoint point, double maxDistance) {
+        this.whereWithinMiles(key, point, maxDistance, -1);
+        this.orderByGeoPoint();
+    }
+
+    public void whereWithinMiles(String key, JBGeoPoint point, double maxDistance, double minDistance) {
+        Map<String, Object> map = JBUtils.createMap("$nearSphere", JBUtils.mapFromGeoPoint(point));
+        if (maxDistance >= 0) {
+            map.put("$maxDistanceInMiles", maxDistance);
+        }
+        if (minDistance >= 0) {
+            map.put("$minDistanceInMiles", minDistance);
+        }
+        addWhereItem(key, null, map);
+        this.orderByGeoPoint();
+    }
+
+    public void whereWithinRadians(String key, JBGeoPoint point, double maxDistance) {
+        this.whereWithinRadians(key, point, maxDistance, -1);
+        this.orderByGeoPoint();
+    }
+
+    public void whereWithinRadians(String key, JBGeoPoint point, double maxDistance,
+                                   double minDistance) {
+        Map<String, Object> map = JBUtils.createMap("$nearSphere", JBUtils.mapFromGeoPoint(point));
+        if (maxDistance >= 0) {
+            map.put("$maxDistanceInRadians", maxDistance);
+        }
+        if (minDistance >= 0) {
+            map.put("$minDistanceInRadians", minDistance);
+        }
+        addWhereItem(new JBQueryOperation(key, map, null));
+        this.orderByGeoPoint();
     }
 
     public void whereContains(String key, String substring) {
