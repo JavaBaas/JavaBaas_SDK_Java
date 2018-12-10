@@ -4,7 +4,6 @@ import com.javabaas.javasdk.annotation.HookEvent;
 import com.javabaas.javasdk.callback.JBStatusCallback;
 import com.javabaas.javasdk.cloud.*;
 
-import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -157,7 +156,6 @@ public class JB {
         return listener.onHook(hookRequest);
     }
 
-
     private static void initConfig(String remote, String appId, String key, String masterKey, String adminKey, String plat) {
         if (!JBUtils.isEmpty(remote)) {
             INSTANCE.config.remote = remote.endsWith("/") ? remote : remote + "/";
@@ -187,7 +185,7 @@ public class JB {
     }
 
     private static void updateAdjustTime() {
-        final long timestamp = new Date().getTime();
+        final long timestamp = System.currentTimeMillis();
         JBStatus.getStatusInBackground(new JBStatusCallback() {
             @Override
             public void done(boolean success, Map<String, Object> status, JBException e) {

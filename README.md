@@ -19,7 +19,7 @@
 
 ```
 dependencies {
-	compile("com.javabaas:javasdk:2.0.9")
+	compile("com.javabaas:javasdk:2.0.11")
 }
 ```
 

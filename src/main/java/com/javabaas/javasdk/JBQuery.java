@@ -11,6 +11,7 @@ import java.util.*;
  */
 public class JBQuery<T extends JBObject> {
     private String className;
+    private Class<T> clazz;
     private String whereSting;
     private Boolean isRunning;
     JBQueryConditions conditions;
@@ -31,6 +32,14 @@ public class JBQuery<T extends JBObject> {
     public JBQuery<T> setClassName(String className) {
         this.className = className;
         return this;
+    }
+
+    public Class<T> getClazz() {
+        return clazz;
+    }
+
+    public void setClazz(Class<T> clazz) {
+        this.clazz = clazz;
     }
 
     /**
@@ -119,8 +128,13 @@ public class JBQuery<T extends JBObject> {
     }
 
     public JBQuery(String className) {
+        this(className, null);
+    }
+
+    JBQuery(String className, Class<T> clazz) {
         JBUtils.checkClassName(className);
         this.className = className;
+        this.clazz = clazz;
         this.conditions = new JBQueryConditions();
     }
 
@@ -612,13 +626,18 @@ public class JBQuery<T extends JBObject> {
                 if (callback == null) {
                     return;
                 }
-                List<T> list = processResults(result.getData());
-                if (list.size() > 0) {
-                    T o = list.get(0);
-                    callback.done(true, o, null);
-                } else {
-                    callback.done(false, null, new JBException(JBCode.OBJECT_NOT_EXIST));
+                try {
+                    List<T> list = processResults(result.getData());
+                    if (list.size() > 0) {
+                        T o = list.get(0);
+                        callback.done(true, o, null);
+                    } else {
+                        callback.done(false, null, new JBException(JBCode.OBJECT_NOT_EXIST));
+                    }
+                } catch (Exception e) {
+                    callback.done(false, null, new JBException(JBCode.INTERNAL_JSON_ERROR));
                 }
+
             }
 
             @Override
@@ -670,9 +689,15 @@ public class JBQuery<T extends JBObject> {
         JBHttpClient.INSTANCE().sendRequest(path, JBHttpMethod.POST, null, getParameters(), sync, new JBObjectCallback() {
             @Override
             public void onSuccess(JBResult result) {
-                List<T> list = processResults(result.getData());
-                if (callback != null) {
-                    callback.done(true, list, null);
+                try {
+                    List<T> list = processResults(result.getData());
+                    if (callback != null) {
+                        callback.done(true, list, null);
+                    }
+                } catch (Exception e) {
+                    if (callback != null) {
+                        callback.done(false, null, new JBException(JBCode.INTERNAL_JSON_ERROR));
+                    }
                 }
             }
 
@@ -798,7 +823,7 @@ public class JBQuery<T extends JBObject> {
         return conditions.assembleParameters();
     }
 
-    protected List<T> processResults(Map<String, Object> map) {
+    protected List<T> processResults(Map<String, Object> map) throws Exception {
         if (map == null || map.get("result") == null) {
             return Collections.emptyList();
         }
@@ -818,7 +843,12 @@ public class JBQuery<T extends JBObject> {
             return Collections.emptyList();
         }
         for (Map<String, Object> object : list) {
-            JBObject jbObject = new JBObject(className);
+            JBObject jbObject;
+            if (clazz != null) {
+                jbObject = clazz.newInstance();
+            } else {
+                jbObject = new JBObject(className);
+            }
             JBUtils.copyPropertiesFromMapToJBObject(jbObject, object);
             result.add((T) jbObject);
         }

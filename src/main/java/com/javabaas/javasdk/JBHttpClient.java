@@ -5,7 +5,6 @@ import com.javabaas.javasdk.callback.JBObjectCallback;
 import okhttp3.*;
 
 import java.io.IOException;
-import java.util.Date;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
@@ -111,7 +110,7 @@ public class JBHttpClient {
         if (!JB.getInstance().getConfig().finishInit) {
             throw new JBException(JBCode.INTERNAL_ERROR.getCode(), "JBConfig未初始化");
         }
-        long timestamp = new Date().getTime();
+        long timestamp = System.currentTimeMillis();
         String timestampStr = String.valueOf(timestamp - JB.getInstance().getConfig().adjustTime);
         String nonce = UUID.randomUUID().toString().replace("-", "");
 

@@ -86,7 +86,7 @@ public class JBUser extends JBObject {
      *
      */
     public static JBQuery<JBUser> getQuery() {
-        return new JBQuery<>(JBUser.userClassName());
+        return new JBQuery<>(JBUser.userClassName(), JBUser.class);
     }
 
     /**
