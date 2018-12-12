@@ -92,12 +92,12 @@ public class HookSetting {
      * @return 钩子名
      */
     public static String hookName(String name, HookEvent event) {
-        return name + "_" + event.getName();
+        return name + "__" + event.getName();
     }
 
     public static String hookClazzName(String hookName) {
-        if (hookName != null && hookName.contains("_")) {
-            String[] values = hookName.split("_");
+        if (hookName != null && hookName.contains("__")) {
+            String[] values = hookName.split("__");
             if (values.length > 1) {
                 return values[0];
             }
@@ -106,8 +106,8 @@ public class HookSetting {
     }
 
     public static HookEvent hookEvent(String hookName) {
-        if (hookName != null && hookName.contains("_")) {
-            String[] values = hookName.split("_");
+        if (hookName != null && hookName.contains("__")) {
+            String[] values = hookName.split("__");
             if (values.length > 1) {
                 String eventName = values[1];
                 return HookEvent.getEvent(eventName);
