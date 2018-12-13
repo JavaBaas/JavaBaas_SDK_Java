@@ -15,9 +15,22 @@ public class JBField {
     private JBClazz clazz;
     private String name;
     private int type;
-    private boolean internal;//系统内建字段 禁止修改删除
-    private boolean security;//安全字段 必须使用管理权限操作
-    private boolean required;//必填字段
+    /**
+     * 系统内建字段 禁止修改删除
+     */
+    private boolean internal;
+    /**
+     * 安全字段 必须使用管理权限操作
+     */
+    private boolean security;
+    /**
+     * 必填字段
+     */
+    private boolean notNull;
+    /**
+     * 只读字段
+     */
+    private boolean readOnly;
 
     public JBField() {
     }
@@ -75,12 +88,20 @@ public class JBField {
         this.security = security;
     }
 
-    public boolean isRequired() {
-        return required;
+    public boolean isNotNull() {
+        return notNull;
     }
 
-    public void setRequired(boolean required) {
-        this.required = required;
+    public void setNotNull(boolean notNull) {
+        this.notNull = notNull;
+    }
+
+    public boolean isReadOnly() {
+        return readOnly;
+    }
+
+    public void setReadOnly(boolean readOnly) {
+        this.readOnly = readOnly;
     }
 
     /**
@@ -190,7 +211,7 @@ public class JBField {
 
     /**
      * 更新字段信息 同步<br/>
-     * 目前更新字段信息只能更新字段security和required信息
+     * 目前更新字段信息只能更新字段security和notNull信息
      *
      * @throws JBException 异常信息
      */
@@ -210,7 +231,7 @@ public class JBField {
 
     /**
      * 更新字段信息 异步<br/>
-     * 目前更新字段信息只能更新字段security和required信息
+     * 目前更新字段信息只能更新字段security和notNull信息
      *
      * @param callback
      */
@@ -399,7 +420,8 @@ public class JBField {
         map.put("type", getType());
         map.put("internal", isInternal());
         map.put("security", isSecurity());
-        map.put("required", isRequired());
+        map.put("notNull", isNotNull());
+        map.put("readonly", isReadOnly());
         return map;
     }
 
@@ -409,7 +431,8 @@ public class JBField {
         private int type;
         private boolean internal;
         private boolean security;
-        private boolean required;
+        private boolean notNull;
+        private boolean readonly;
 
         public String getId() {
             return id;
@@ -451,13 +474,20 @@ public class JBField {
             this.security = security;
         }
 
-        public boolean isRequired() {
-            return required;
+        public boolean isNotNull() {
+            return notNull;
         }
 
-        public void setRequired(boolean required) {
-            this.required = required;
+        public void setNotNull(boolean notNull) {
+            this.notNull = notNull;
         }
 
+        public boolean isReadonly() {
+            return readonly;
+        }
+
+        public void setReadonly(boolean readonly) {
+            this.readonly = readonly;
+        }
     }
 }

@@ -630,7 +630,7 @@ public class JBUser extends JBObject {
      *
      * @param callback 修改成功或失败回调
      */
-    public void updateInBackground(JBBooleanCallback callback) {
+    public void updateupdateInBackground(JBBooleanCallback callback) {
         updateFromJavabaas(false, callback);
     }
 

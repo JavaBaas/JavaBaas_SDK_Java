@@ -10,7 +10,7 @@
 	<dependency>
 		<groupId>com.javabaas</groupId>
 		<artifactId>javasdk</artifactId>
-		<version>2.0.12</version>
+		<version>2.0.13</version>
 	</dependency>
 </dependencies>
 ```
@@ -19,7 +19,7 @@
 
 ```
 dependencies {
-	compile("com.javabaas:javasdk:2.0.12")
+	compile("com.javabaas:javasdk:2.0.13")
 }
 ```
 
@@ -857,7 +857,7 @@ JBApp.exportInBackground("59dc970bce69f81448a2a119", new JBAppExportCallback() {
                     "type":2,
                     "internal":false,
                     "security":false,
-                    "required":false
+                    "notNull":false
                 },
                 {
                     "id":"59e970a212a0aa7f91bb0487",
@@ -865,7 +865,7 @@ JBApp.exportInBackground("59dc970bce69f81448a2a119", new JBAppExportCallback() {
                     "type":1,
                     "internal":false,
                     "security":false,
-                    "required":false
+                    "notNull":false
                 },
                 Object{...}
             ]
@@ -879,7 +879,7 @@ JBApp.exportInBackground("59dc970bce69f81448a2a119", new JBAppExportCallback() {
 
 ``` java
 try {
-	String data = "{\"id\":\"59dc970bce69f81448a2a119\",\"name\":\"NewApp\",\"key\":\"cde5b8c5e097436aafe6377e33eeb003\",\"masterKey\":\"c57cd396c2034ef6a6ae1c74b7596730\",\"clazzs\":[{\"id\":\"59dc9869ce69f81448a2a13e\",\"name\":\"Test\",\"acl\":{\"*\":{\"find\":true,\"get\":true,\"insert\":true,\"update\":true,\"delete\":true}},\"internal\":false,\"fields\":[{\"id\":\"59dc9869ce69f81448a2a13f\",\"name\":\"count\",\"type\":2,\"internal\":false,\"security\":false,\"required\":false},{\"id\":\"59e970a212a0aa7f91bb0487\",\"name\":\"name\",\"type\":1,\"internal\":false,\"security\":false,\"required\":false}]}]}";
+	String data = "{\"id\":\"59dc970bce69f81448a2a119\",\"name\":\"NewApp\",\"key\":\"cde5b8c5e097436aafe6377e33eeb003\",\"masterKey\":\"c57cd396c2034ef6a6ae1c74b7596730\",\"clazzs\":[{\"id\":\"59dc9869ce69f81448a2a13e\",\"name\":\"Test\",\"acl\":{\"*\":{\"find\":true,\"get\":true,\"insert\":true,\"update\":true,\"delete\":true}},\"internal\":false,\"fields\":[{\"id\":\"59dc9869ce69f81448a2a13f\",\"name\":\"count\",\"type\":2,\"internal\":false,\"security\":false,\"notNull\":false},{\"id\":\"59e970a212a0aa7f91bb0487\",\"name\":\"name\",\"type\":1,\"internal\":false,\"security\":false,\"required\":false}]}]}";
 	JBApp.importData(data);
 	System.out.println("导入应用成功");
 } catch (JBException e) {
@@ -1108,7 +1108,7 @@ try {
             "type":1,
             "internal":false,
             "security":false,
-            "required":false
+            "notNull":false
         }
     ]
 }
@@ -1118,7 +1118,7 @@ try {
 使用者拥有了当前应用的`master`管理权限后，可以导入表结构信息，需要注意的是只是导入表结构信息，不含表中文档内容。
 
 ```java
-String data = "{\"id\":\"5a015ad3fa0a5737c68c1c9d\",\"name\":\"Sound\",\"acl\":{\"userId\":{\"delete\":true},\"*\":{\"find\":true,\"get\":true}},\"internal\":false,\"fields\":[{\"id\":\"5a016241fa0a5737c68c1c9e\",\"name\":\"title\",\"type\":1,\"internal\":false,\"security\":false,\"required\":false}]}";
+String data = "{\"id\":\"5a015ad3fa0a5737c68c1c9d\",\"name\":\"Sound\",\"acl\":{\"userId\":{\"delete\":true},\"*\":{\"find\":true,\"get\":true}},\"internal\":false,\"fields\":[{\"id\":\"5a016241fa0a5737c68c1c9e\",\"name\":\"title\",\"type\":1,\"internal\":false,\"security\":false,\"notNull\":false}]}";
 JBClazz.importDataInBackground(data, new JBImportCallback() {
 	@Override
 	public void done(boolean success, JBException e) {
@@ -1141,7 +1141,7 @@ name | 字段名称
 type | 字段类型（详见 [字段类型说明](java-sdk.md#字段类型说明)）
 internal | 是否是内建字段，内建字段不能进行删除字段操作
 security | 是否是安全字段，安全字段必须需要 master 管理权限才可以修改
-required | 是否是必填字段
+notNull | 是否是必填字段
 
 >`JBField`提供的一些主要的方法为：
 
@@ -1178,7 +1178,7 @@ try {
 	JBField field = new JBField(1, "title");
 	field.setClazz(new JBClazz("Sound"));
 	// 是否必填，默认为false
-	field.setRequired(true);
+	field.setNotNull(true);
 	// 是否内建，默认为false
 	field.setInternal(true);
 	// 是否为安全字段，安全字段信息在获取数据时不会带出，默认为false
@@ -1203,7 +1203,7 @@ try {
 ```
 
 ### 更新字段信息
-使用者拥有了当前应用的`master`管理权限后，可以对字段信息进行更新，目前更新字段信息只限于更新字段的`security`，`required`属性。
+使用者拥有了当前应用的`master`管理权限后，可以对字段信息进行更新，目前更新字段信息只限于更新字段的`security`，`notNull`属性。
 
 ```java
 try {
