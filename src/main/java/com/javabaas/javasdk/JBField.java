@@ -26,11 +26,11 @@ public class JBField {
     /**
      * 必填字段
      */
-    private boolean notNull;
+    private boolean notnull;
     /**
      * 只读字段
      */
-    private boolean readOnly;
+    private boolean readonly;
 
     public JBField() {
     }
@@ -88,20 +88,20 @@ public class JBField {
         this.security = security;
     }
 
-    public boolean isNotNull() {
-        return notNull;
+    public boolean isNotnull() {
+        return notnull;
     }
 
-    public void setNotNull(boolean notNull) {
-        this.notNull = notNull;
+    public void setNotnull(boolean notnull) {
+        this.notnull = notnull;
     }
 
-    public boolean isReadOnly() {
-        return readOnly;
+    public boolean isReadonly() {
+        return readonly;
     }
 
-    public void setReadOnly(boolean readOnly) {
-        this.readOnly = readOnly;
+    public void setReadonly(boolean readonly) {
+        this.readonly = readonly;
     }
 
     /**
@@ -211,7 +211,7 @@ public class JBField {
 
     /**
      * 更新字段信息 同步<br/>
-     * 目前更新字段信息只能更新字段security和notNull信息
+     * 目前更新字段信息只能更新字段security和notnull信息
      *
      * @throws JBException 异常信息
      */
@@ -231,7 +231,7 @@ public class JBField {
 
     /**
      * 更新字段信息 异步<br/>
-     * 目前更新字段信息只能更新字段security和notNull信息
+     * 目前更新字段信息只能更新字段security和notnull信息
      *
      * @param callback
      */
@@ -420,8 +420,8 @@ public class JBField {
         map.put("type", getType());
         map.put("internal", isInternal());
         map.put("security", isSecurity());
-        map.put("notNull", isNotNull());
-        map.put("readonly", isReadOnly());
+        map.put("notnull", isNotnull());
+        map.put("readonly", isReadonly());
         return map;
     }
 
@@ -431,7 +431,7 @@ public class JBField {
         private int type;
         private boolean internal;
         private boolean security;
-        private boolean notNull;
+        private boolean notnull;
         private boolean readonly;
 
         public String getId() {
@@ -474,12 +474,12 @@ public class JBField {
             this.security = security;
         }
 
-        public boolean isNotNull() {
-            return notNull;
+        public boolean isNotnull() {
+            return notnull;
         }
 
-        public void setNotNull(boolean notNull) {
-            this.notNull = notNull;
+        public void setNotnull(boolean notnull) {
+            this.notnull = notnull;
         }
 
         public boolean isReadonly() {
