@@ -72,7 +72,7 @@ public class JBPush {
         }
         String path = JBHttpClient.getMasterPath("push");
         query.assembleParameters();
-        JBHttpClient.INSTANCE().sendRequest(path, JBHttpMethod.POST, new JBHttpParams(query.getParameters()), this.notification == null ? this.message : this.notification, sync, new JBObjectCallback() {
+        JBHttpClient.INSTANCE().sendRequest(path, JBHttpMethod.POST, new JBHttpParams(query.getParameters()), this, sync, new JBObjectCallback() {
             @Override
             public void onSuccess(JBResult result) {
                 if (callback != null) {

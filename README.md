@@ -10,7 +10,7 @@
 	<dependency>
 		<groupId>com.javabaas</groupId>
 		<artifactId>javasdk</artifactId>
-		<version>2.0.14</version>
+		<version>2.0.15</version>
 	</dependency>
 </dependencies>
 ```
@@ -19,7 +19,7 @@
 
 ```
 dependencies {
-	compile("com.javabaas:javasdk:2.0.14")
+	compile("com.javabaas:javasdk:2.0.15")
 }
 ```
 
@@ -75,7 +75,7 @@ JavaSDK目前提供了包括`JBApp`、`JBClazz`、`JBField`、`JBObject`、`JBUs
 --- | ---
 JBApp | [应用对象](java-sdk.md#JBApp-应用)
 JBClazz | [表对象，通常一个JBClazz对应一个mongoDB中的Collection](java-sdk.md#JBClazz-表)
-JBField | 字段对象，对应mongoDB中的文档的key
+JBField | 字段对象，对应mongoDB中的文档的ke
 JBObject | 文档对象
 JBUser | 用户
 JBQuery | 查询对象
