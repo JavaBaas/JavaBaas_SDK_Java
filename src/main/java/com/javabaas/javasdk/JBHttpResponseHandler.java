@@ -73,6 +73,12 @@ public abstract class JBHttpResponseHandler implements Callback {
                                 JBHttpResponseHandler.this.onSuccess(result);
                             } else if (response.code() == 400 || response.code() == 500) {
                                 JBResult result = JBUtils.readValue(content, JBResult.class);
+                                if (result.getCode() == 1310) {
+                                    // SesstionToken失效
+                                    if (JB.getInstance().getJBUserSessionTokenErrorCallback() != null) {
+                                        JB.getInstance().getJBUserSessionTokenErrorCallback().done();
+                                    }
+                                }
                                 JBHttpResponseHandler.this.onFailure(new JBException(result.getCode(), result.getMessage()));
                             } else {
                                 JBHttpResponseHandler.this.onFailure(new JBException(JBCode.OTHER_HTTP_ERROR));
@@ -114,6 +120,12 @@ public abstract class JBHttpResponseHandler implements Callback {
                 this.onSuccess(result);
             } else if (response.code() == 400 || response.code() == 500) {
                 JBResult result = JBUtils.readValue(content, JBResult.class);
+                if (result.getCode() == 1310) {
+                    // SesstionToken失效
+                    if (JB.getInstance().getJBUserSessionTokenErrorCallback() != null) {
+                        JB.getInstance().getJBUserSessionTokenErrorCallback().done();
+                    }
+                }
                 this.onFailure(new JBException(result.getCode(), result.getMessage()));
             } else {
                 this.onFailure(new JBException(JBCode.OTHER_HTTP_ERROR));

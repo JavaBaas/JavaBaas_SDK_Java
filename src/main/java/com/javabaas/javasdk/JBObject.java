@@ -252,9 +252,12 @@ public class JBObject {
     }
 
     public JBGeoPoint getJBGeoPoint(String key) {
-        List<Double> list = getList(key);
+        if (get(key) == null) {
+            return null;
+        }
+        List<Number> list = getList(key);
         if (list.size() > 1) {
-           return new JBGeoPoint(list.get(1), list.get(0));
+           return new JBGeoPoint(list.get(1).doubleValue(), list.get(0).doubleValue());
         } else {
             return null;
         }

@@ -2,6 +2,7 @@ package com.javabaas.javasdk;
 
 import com.javabaas.javasdk.annotation.HookEvent;
 import com.javabaas.javasdk.callback.JBStatusCallback;
+import com.javabaas.javasdk.callback.JBUserSessionTokenErrorCallback;
 import com.javabaas.javasdk.cloud.*;
 
 import java.util.HashMap;
@@ -13,6 +14,7 @@ import java.util.Map;
  */
 public class JB {
     private static final JB INSTANCE = new JB();
+    private JBUserSessionTokenErrorCallback jbUserSessionTokenErrorCallback;
     private JBConfig config;
 
     private final ScannerEngine engine = new ScannerEngine();
@@ -55,6 +57,12 @@ public class JB {
     public static void init(String remote, String appId, String key, String plat) {
         initConfig(remote, appId, key, null, null, plat);
         updateAdjustTime();
+    }
+
+    public static void init(String remote, String appId, String key, String plat, JBUserSessionTokenErrorCallback callback) {
+        initConfig(remote, appId, key, null, null, plat);
+        updateAdjustTime();
+        INSTANCE.jbUserSessionTokenErrorCallback = callback;
     }
 
     /**
@@ -112,6 +120,10 @@ public class JB {
 
     public JBConfig getConfig() {
         return config;
+    }
+
+    public JBUserSessionTokenErrorCallback getJBUserSessionTokenErrorCallback() {
+        return jbUserSessionTokenErrorCallback;
     }
 
     public void addListeners(Object listeners, Class<?> listenersClass) {
